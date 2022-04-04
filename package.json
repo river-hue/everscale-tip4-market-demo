@@ -1,0 +1,15 @@
+{
+  "name": "everscale-tip4-market-demo",
+  "version": "0.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "test": "export TVM_LINKER_LIB_PATH=$PWD/TON-Solidity-Compiler/lib/stdlib_sol.tvm && locklift test --network local --config locklift.config.js --test test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@broxus/contracts": "^1.0.4",
+    "locklift": "^1.5.3"
+  }
+}

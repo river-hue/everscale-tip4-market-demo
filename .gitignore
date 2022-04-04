@@ -1,0 +1,8 @@
+node_modules
+.DS_Store
+
+#TON
+build/
+compiled/
+TON-Solidity-Compiler/
+TVM-linker/
