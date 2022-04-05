@@ -29,7 +29,7 @@ contract Collection is TIP4_3Collection {
         tvm.accept();
     }
 
-    function mintNft() external virtual {
+    function mintNft() internal virtual {
         require(msg.value > _remainOnNft + 0.1 ton, CollectionErrors.value_is_less_than_required);
         tvm.rawReserve(msg.value, 1);
 
