@@ -15,7 +15,8 @@ import "./Collection.sol";
 contract Market is Collection, IAcceptTokensTransferCallback {
 
     address _tokenWallet;
-    uint56 _minNftTokenPrice;
+    address _tokenRoot;
+    uint256 _minNftTokenPrice;
 
     constructor(
         address tokenRoot,
@@ -31,7 +32,29 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         ownerPubkey
     ) public {
        tvm.accept();
-       _tokenWallet = TokenRoot(tokenRoot).walletOf(this);
+       _tokenRoot = tokenRoot;
+       _minNftTokenPrice = minNftTokenPrice;
+       
+       TokenRoot(tokenRoot).deployWallet{
+           value: 0.5 ton,
+           flag: 1,
+           callback: setTokenWallet,
+           bounce: true
+        }(address(this), 0.1 ton);
+    }
+
+    function mintNft(address owner) public virtual onlyOwner {
+        _mintNft(owner);
+    }
+
+    function tokenWallet() external view virtual responsible returns (address wallet) {
+        return {value: 0, flag: 64, bounce: false} (_tokenWallet);
+    }
+
+    function setTokenWallet(address newTokenWallet) public {
+        require(msg.sender == _tokenRoot, TokenErrors.WRONG_ROOT_OWNER);
+        tvm.accept();
+        _tokenWallet = newTokenWallet;
     }
 
     function onAcceptTokensTransfer(
@@ -44,27 +67,29 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     ) override external {
         require(msg.sender == _tokenWallet, TokenErrors.WRONG_WALLET_OWNER);
 
-        // Send Back Gas
-        // TODO
-
         // Check Payload
-        (uint256 nftId, address newOwner) = _deserializeNftPurchase(payload);
-        require(nftId <= _totalSupply, TokenErrors.NOT_OWNER);
-        // Get Nft
-        Nft targetNft = Nft(this.nftAddress(nftId));
-        // Check if still for Sale
-        (, address prevOwner,,) = targetNft.getInfo();
-        require(prevOwner == this, TokenErrors.NOT_OWNER);
+        (address newOwner) = _deserializeNftPurchase(payload);
 
-        // If for Sale Check That Purchase is Correct
-        require(amount >= _minNftTokenPrice, TokenErrors.NOT_ENOUGH_BALANCE);
-        // TODO: Figure out SendGasTo
-        targetNft.changeOwner(newOwner, remainingGasTo, null);
-        
+        // Check if Tickets are not Oversold
+        // Check if Price is Correct
+        if(_totalSupply < 1000 && amount == _minNftTokenPrice) {
+            mintNft(newOwner);
+        } else {
+            // возврат токенов
+            ITokenWallet(msg.sender).transfer{value: 0 , flag: 128, bounce: false}(
+                amount,
+                sender,
+                0,
+                remainingGasTo,
+                true,
+                payload
+            );
+        }
     }
 
-    function _deserializeNftPurchase(TvmCell payload) internal returns (uint256 nftId, address reciever) {
-        return abi.decode(payload, (uint256, address));
+
+    function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever) {
+        return abi.decode(payload, (address));
     }
 
 }

@@ -29,7 +29,8 @@ contract Collection is TIP4_3Collection {
         tvm.accept();
     }
 
-    function mintNft() internal virtual {
+    
+    function _mintNft(address owner) internal virtual {
         require(msg.value > _remainOnNft + 0.1 ton, CollectionErrors.value_is_less_than_required);
         tvm.rawReserve(msg.value, 1);
 
@@ -43,7 +44,7 @@ contract Collection is TIP4_3Collection {
             value: 0,
             flag: 128
         }(
-            msg.sender,
+            owner,
             msg.sender,
             _remainOnNft,
             _indexDeployValue,
@@ -54,7 +55,7 @@ contract Collection is TIP4_3Collection {
         emit NftCreated(
             id, 
             nftAddr,
-            msg.sender,
+            owner,
             msg.sender, 
             msg.sender
         );
