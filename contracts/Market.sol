@@ -43,7 +43,8 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }(address(this), 0.1 ton);
     }
 
-    function mintNft(address owner) public virtual onlyOwner {
+    function mintNft(address owner) public virtual {
+        tvm.accept();
         _mintNft(owner);
     }
 
@@ -70,10 +71,12 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         // Check Payload
         (address newOwner) = _deserializeNftPurchase(payload);
 
+        // Check if Not Already Owner
+        
         // Check if Tickets are not Oversold
         // Check if Price is Correct
-        if(_totalSupply < 1000 && amount == _minNftTokenPrice) {
-            mintNft(newOwner);
+        if(_totalSupply < 1000 && amount >= _minNftTokenPrice) {
+            _mintNft(newOwner);
         } else {
             // возврат токенов
             ITokenWallet(msg.sender).transfer{value: 0 , flag: 128, bounce: false}(
@@ -87,9 +90,14 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }
     }
 
-
     function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever) {
         return abi.decode(payload, (address));
+    }
+
+    function _serializeNftPurchase(address recipient) public pure returns (TvmCell payload) {
+        TvmBuilder encoder;
+        encoder.store(recipient);
+        return encoder.toCell();
     }
 
 }

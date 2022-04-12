@@ -2,19 +2,33 @@ const { expect } = require("chai")
 const BigNumber = require("bignumber.js")
 
 const getRandomNonce = () => Math.random() * 64000 | 0;
+const EMPTY_TVM_CELL = 'te6ccgEBAQEAAgAAAA=='
 
-async function deployTokenRoot(name = 'Test', symbol = 'TST', decimals = '4') {
+
+async function deployAccount(keyPair, balance) {
+  const account = await locklift.factory.getAccount("Wallet")
+
+  await locklift.giver.deployContract({
+    contract: account,
+    constructorParams: {},
+    initParams: {
+      _randomNonce: Math.random() * 6400 | 0,
+    },
+    keyPair,
+  }, locklift.utils.convertCrystal(balance, 'nano'));
+
+  return account;
+}
+
+async function deployTokenRoot(keyPair, account, name = 'Test', symbol = 'TST', decimals = '4') {
 
   const TokenRoot = await locklift.factory.getContract("TokenRoot")
   const TokenWallet = await locklift.factory.getContract("TokenWallet");
 
-  const [keyPair] = await locklift.keys.getKeyPairs();
-  let giverAddr = locklift.giver.giver.address;
-
   return await locklift.giver.deployContract({
     contract: TokenRoot,
     constructorParams: {
-      initialSupplyTo: giverAddr,
+      initialSupplyTo: account.address,
       initialSupply: new BigNumber(10000000).shiftedBy(2).toFixed(),
       deployWalletValue: locklift.utils.convertCrystal('1', 'nano'),
       mintDisabled: false,
@@ -25,7 +39,7 @@ async function deployTokenRoot(name = 'Test', symbol = 'TST', decimals = '4') {
     initParams: {
       deployer_: locklift.utils.zeroAddress,
       randomNonce_: getRandomNonce(),
-      rootOwner_: giverAddr,
+      rootOwner_: account.address,
       name_: name,
       symbol_: symbol,
       decimals_: decimals,
@@ -36,14 +50,11 @@ async function deployTokenRoot(name = 'Test', symbol = 'TST', decimals = '4') {
 
 }
 
-async function deployMarket(tokenRoot) {
+async function deployMarket(keyPair, account, tokenRoot) {
   const Market = await locklift.factory.getContract("Market")
   const Nft = await locklift.factory.getContract("Nft");
   const Index = await locklift.factory.getContract("Index")
   const IndexBasis = await locklift.factory.getContract("IndexBasis")
-
-  const [keyPair] = await locklift.keys.getKeyPairs();
-  let giverAddr = locklift.giver.giver.address;
 
   const ownerPubkey = "0x" + keyPair.public;
 
@@ -63,25 +74,30 @@ async function deployMarket(tokenRoot) {
 
 }
 
-async function deployWallet(owner, tokenRoot, walletValue = 1000) {
+async function deployTokenWallet(keyPair, account, tokenRoot) {
 
-  // let wallet = await tokenRoot.call({
-  //   method: 'walletOf',
-  //   params: {
-  //     walletOwner: owner.public,
-  //     answerId: 0
-  //   }
-  // });
+  let walletAddr = await tokenRoot.call({
+    method: 'walletOf',
+    params: {
+      walletOwner: account.address,
+      answerId: 0
+    }
+  });
 
-  let wallet = await tokenRoot.run({
+  await account.runTarget({
+    contract: tokenRoot,
     method: 'deployWallet',
     params: {
-      walletOwner: owner.public,
-      deployWalletValue: 0,
+      walletOwner: account.address,
+      deployWalletValue: locklift.utils.convertCrystal(0.1, 'nano'),
       answerId: 0
     },
-    keyPair: locklift.keys.getKeyPairs()[0]
-  }, locklift.utils.convertCrystal(2, 'nano'));
+    value: locklift.utils.convertCrystal(0.5, 'nano'),
+    keyPair
+  });
+
+  const TokenWallet = await locklift.factory.getContract("TokenWallet")
+  TokenWallet.setAddress(walletAddr);
 
   // await tokenRoot.run({
   //   method: 'mint',
@@ -95,7 +111,7 @@ async function deployWallet(owner, tokenRoot, walletValue = 1000) {
   //   }
   // })
 
-  return wallet;
+  return TokenWallet;
 
 }
 
@@ -122,6 +138,7 @@ describe('Test Market contract', async function () {
   let market;
   let tokenRoot;
   let wallet1;
+  let account;
 
   describe('Contracts', async function () {
     it('Should Load contract factory', async function () {
@@ -132,26 +149,27 @@ describe('Test Market contract', async function () {
     })
 
     it('Should Deploy Market Contract', async function () {
-      this.timeout(40000);
+      this.timeout(800000);
 
       const keyPairs = await locklift.keys.getKeyPairs();
-      const user1 = keyPairs[1];
+      const user1 = keyPairs[0];
 
-      tokenRoot = await deployTokenRoot('Test Token', 'TST', '4')
-      market = await deployMarket(tokenRoot)
+      account = await deployAccount(user1, 100)
+      tokenRoot = await deployTokenRoot(user1, account, 'Test Token', 'TST', '4')
+      market = await deployMarket(user1, account, tokenRoot)
 
       return expect(market.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
     })
 
     it('Should Deploy Wallet Contract', async function () {
-      this.timeout(40000);
+      this.timeout(800000);
 
       const keyPairs = await locklift.keys.getKeyPairs();
       const user1 = keyPairs[0];
-      wallet1 = await deployWallet(user1, tokenRoot, 1000);
+      wallet1 = await deployTokenWallet(user1, account, tokenRoot, 1000);
 
-      expect(wallet.address).to.be.a('string')
+      expect(wallet1.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
     })
   })
@@ -161,46 +179,60 @@ describe('Test Market contract', async function () {
       describe('.mintNft()', async function () {
         it('Should run', async function () {
           this.timeout(20000);
-  
-          const [keyPair, user1] = await locklift.keys.getKeyPairs();
+          
+          const keyPairs = await locklift.keys.getKeyPairs();
+          const user1 = keyPairs[0];
+
           let before = await getTotalSupply(market)
   
-          const res = await market.run({
+          const res = await account.runTarget({
+            contract: market,
             method: 'mintNft',
-            params: { owner: market.address },
-            keyPair,
-          }, locklift.utils.convertCrystal(1000, 'nano'))
+            params: { owner: account.address },
+            keyPair: user1,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
+
   
           let after = await getTotalSupply(market)
   
-          expect(after).to.greaterThan(before)
+          expect(after.toNumber()).to.be.greaterThan(before.toNumber())
         })
       })
       it('.onAcceptTokensTransfer', async function () {
         this.timeout(20000)
-        const Nft = await locklift.factory.getContract("Nft");
-
+        const nft = await locklift.factory.getContract("Nft");
+        
         const keyPairs = await locklift.keys.getKeyPairs();
         const user1 = keyPairs[0];
 
         // Set NFT Owner
-        let nftOwner = user1.address;
+        let nftOwner = account.address;
 
         let before = await getTotalSupply(market)
+        let payload = await market.call({
+          method: '_serializeNftPurchase',
+          params: {
+            recipient: nftOwner,
+          }
+        })
 
         // Run Purchase
         // This calls onAcceptTokensTransfer back to Market
-        await wallet1.run({
-          method: 'transferToWallet',
+         await account.runTarget({
+          contract: wallet1,
+          method: 'transfer',
           params: {
-            amount: 10,
-            recipientTokenWallet: market._tokenWallet,
-            remainingGasTo: user1.address,
+            amount: 11,
+            recipient: market.address,
+            remainingGasTo: account.address,
             notify: true,
-            payload: nftOwner
+            deployWalletValue: 0,
+            payload,
           },
-          keyPair: user1
-        }, locklift.utils.convertCrystal(2, 'nano'))
+          keyPair: user1,
+          value: locklift.utils.convertCrystal(2, 'nano')
+        })
 
         let after = await getTotalSupply(market)
 
@@ -212,15 +244,10 @@ describe('Test Market contract', async function () {
           }
         })
 
-        let nft = new Nft()
         nft.setAddress(nftAddr)
         nft.setKeyPair(user1)
 
-
-
-
-
-        expect(after).to.greaterThan(before)
+        expect(after.toNumber()).to.be.greaterThan(before.toNumber())
       })
     })
   })
