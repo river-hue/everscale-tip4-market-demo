@@ -21,6 +21,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     address _tokenRoot;
     uint256 _minNftTokenPrice;
     uint256 _purchaseCount;
+    address _testOwner;
 
     constructor(
         address tokenRoot,
@@ -28,7 +29,8 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         TvmCell codeNft,
         TvmCell codeIndex,
         TvmCell codeIndexBasis,
-        uint256 ownerPubkey
+        uint256 ownerPubkey,
+        address testOwner
     ) Collection(
         codeNft, 
         codeIndex,
@@ -38,6 +40,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
        tvm.accept();
        _tokenRoot = tokenRoot;
        _minNftTokenPrice = minNftTokenPrice;
+       _testOwner = testOwner;
        
        TokenRoot(tokenRoot).deployWallet{
            value: 0.5 ton,
@@ -48,6 +51,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     }
 
     function mintNft(address owner, string json) public virtual {
+        require(msg.sender == _testOwner, 100);
         _mintNft(owner, json);
     }
 
