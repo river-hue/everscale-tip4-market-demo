@@ -24,6 +24,8 @@ sh ./scripts/install_tvm_linker.sh
 npm install
 # Run Local Node
 docker run -d --name local-node -e USER_AGREEMENT=yes -p80:80 tonlabs/local-node
+# Compile
+npm run build
 # Run Tests
 npm test
 ```
