@@ -9,13 +9,15 @@ pragma AbiHeader pubkey;
 
 import './modules/TIP4_1/TIP4_1Nft.sol';
 import './modules/TIP4_3/TIP4_3Nft.sol';
+import './modules/TIP4_2/TIP4_2Nft.sol';
 
-contract Nft is TIP4_1Nft, TIP4_3Nft {
+contract Nft is TIP4_1Nft, TIP4_3Nft, TIP4_2Nft {
 
     constructor(
         address owner,
         address sendGasTo,
         uint128 remainOnNft,
+        string json,
         uint128 indexDeployValue,
         uint128 indexDestroyValue,
         TvmCell codeIndex
@@ -23,6 +25,8 @@ contract Nft is TIP4_1Nft, TIP4_3Nft {
         owner,
         sendGasTo,
         remainOnNft
+    ) TIP4_2Nft (
+        json
     ) TIP4_3Nft (
         indexDeployValue,
         indexDestroyValue,

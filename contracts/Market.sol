@@ -6,8 +6,11 @@ pragma AbiHeader pubkey;
 
 import './modules/TokenContracts/interfaces/IAcceptTokensTransferCallback.sol';
 import './modules/TokenContracts/libraries/TokenErrors.sol';
+import './modules/TIP4_1/interfaces/ITIP4_1Collection.sol';
 import './modules/TokenContracts/TokenRoot.sol';
 import './modules/TIP4_3/TIP4_3Collection.sol';
+import './modules/TIP4_1/TIP4_1Collection.sol';
+
 
 import './Nft.sol';
 import "./Collection.sol";
@@ -17,6 +20,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     address _tokenWallet;
     address _tokenRoot;
     uint256 _minNftTokenPrice;
+    uint256 _purchaseCount;
 
     constructor(
         address tokenRoot,
@@ -43,9 +47,12 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }(address(this), 0.1 ton);
     }
 
-    function mintNft(address owner) public virtual {
-        tvm.accept();
-        _mintNft(owner);
+    function mintNft(address owner, string json) public virtual {
+        _mintNft(owner, json);
+    }
+
+    function purchaseCount() external view virtual responsible returns (uint count) {
+        return {value: 0, flag: 64, bounce: false} (_purchaseCount);
     }
 
     function tokenWallet() external view virtual responsible returns (address wallet) {
@@ -69,16 +76,21 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         require(msg.sender == _tokenWallet, TokenErrors.WRONG_WALLET_OWNER);
 
         // Check Payload
-        (address newOwner) = _deserializeNftPurchase(payload);
-
-        // Check if Not Already Owner
+        (address newOwner, string json) = _deserializeNftPurchase(payload);
         
         // Check if Tickets are not Oversold
         // Check if Price is Correct
-        if(_totalSupply < 1000 && amount >= _minNftTokenPrice) {
-            _mintNft(newOwner);
+        if(_purchaseCount < _totalSupply && amount >= _minNftTokenPrice) {
+            _purchaseCount++;
+            address nftAddr = _nftAddress(_purchaseCount);
+            mapping(address => ITIP4_1NFT.CallbackParams) empty;
+            Nft(nftAddr).changeOwner{
+                value: 0 ton,
+                flag: 1,
+                bounce: true
+            }(newOwner, remainingGasTo, empty);
         } else {
-            // возврат токенов
+            // Else Return Tokens Back to Sender
             ITokenWallet(msg.sender).transfer{value: 0 , flag: 128, bounce: false}(
                 amount,
                 sender,
@@ -90,13 +102,14 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }
     }
 
-    function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever) {
-        return abi.decode(payload, (address));
+    function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever, string json) {
+        return abi.decode(payload, (address, string));
     }
 
-    function _serializeNftPurchase(address recipient) public pure returns (TvmCell payload) {
+    function _serializeNftPurchase(address recipient, string json) public pure returns (TvmCell payload) {
         TvmBuilder encoder;
         encoder.store(recipient);
+        encoder.store(json);
         return encoder.toCell();
     }
 
