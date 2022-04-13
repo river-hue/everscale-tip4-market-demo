@@ -145,7 +145,7 @@ describe('Test Market contract', async function () {
   let market;
   let tokenRoot;
   let wallet1;
-  let account;
+  let marketAccount;
 
   describe('Contracts', async function () {
     it('Should Load contract factory', async function () {
@@ -161,9 +161,11 @@ describe('Test Market contract', async function () {
       const keyPairs = await locklift.keys.getKeyPairs();
       const user1 = keyPairs[0];
 
-      account = await deployAccount(user1, 100)
-      tokenRoot = await deployTokenRoot(user1, account, 'Test Token', 'TST', '4')
-      market = await deployMarket(user1, account, tokenRoot)
+      marketAccount = await deployAccount(user1, 100)
+      marketAccount.setKeyPair(user1)
+      
+      tokenRoot = await deployTokenRoot(user1, marketAccount, 'Test Token', 'TST', '4')
+      market = await deployMarket(user1, marketAccount, tokenRoot)
 
       let owner = await market.call({
         method: 'owner',
@@ -181,7 +183,7 @@ describe('Test Market contract', async function () {
 
       const keyPairs = await locklift.keys.getKeyPairs();
       const user1 = keyPairs[0];
-      wallet1 = await deployTokenWallet(user1, account, tokenRoot, 1000);
+      wallet1 = await deployTokenWallet(user1, marketAccount, tokenRoot, 1000);
 
       expect(wallet1.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
@@ -202,10 +204,10 @@ describe('Test Market contract', async function () {
           let nftId = before.toNumber();
           let nft = await getNftById(market, nftId)
 
-          const res = await account.runTarget({
+          const res = await marketAccount.runTarget({
             contract: market,
             method: 'mintNft',
-            params: { owner: account.address, json: ex_json },
+            params: { owner: marketAccount.address, json: ex_json },
             keyPair: user1,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
@@ -220,8 +222,35 @@ describe('Test Market contract', async function () {
           expect(after.toNumber()).to.be.greaterThan(before.toNumber())
         })
 
-        it('should mint if owner')
-        it('should reject if not owner')
+        it('should reject if not owner', async function() {
+          this.timeout(20000);
+
+          const keyPairs = await locklift.keys.getKeyPairs();
+          const user2 = keyPairs[1];
+          const account2 = await deployAccount(user2, 100)
+
+          let ex_json = "{name:'Jerry'}";
+          let before = await getTotalSupply(market)
+          let nftId = before.toNumber();
+          let nft = await getNftById(market, nftId)
+
+          const res = await account2.runTarget({
+            contract: market,
+            method: 'mintNft',
+            params: { owner: marketAccount.address, json: ex_json },
+            keyPair: user2,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
+
+          const res_json = await nft.call({
+            method: 'getJson',
+            params: { answerId: 0 }
+          })
+
+          let after = await getTotalSupply(market)
+          expect(res_json).to.not.equal(ex_json)
+          expect(after.toNumber()).to.be.equal(before.toNumber())
+        })
       })
     })
     describe('Purchase', function () {
@@ -234,7 +263,7 @@ describe('Test Market contract', async function () {
           const user1 = keyPairs[0];
 
           // Mint 2 NFT
-          await Promise.all(Array(1).map((_, index) => account.runTarget({
+          await Promise.all(Array(1).map((_, index) => marketAccount.runTarget({
             contract: market,
             method: 'mintNft',
             params: { owner: market.address, json: `{"index": "${index}"}` },
@@ -244,7 +273,7 @@ describe('Test Market contract', async function () {
           
           
           // Set NFT Owner
-          let nftOwner = account.address;
+          let nftOwner = marketAccount.address;
           let before = await getPurchaseCount(market)
 
           let payload = await market.call({
@@ -257,13 +286,13 @@ describe('Test Market contract', async function () {
 
           // Run Purchase
           // This calls onAcceptTokensTransfer back to Market
-          await account.runTarget({
+          await marketAccount.runTarget({
             contract: wallet1,
             method: 'transfer',
             params: {
               amount: 11,
               recipient: market.address,
-              remainingGasTo: account.address,
+              remainingGasTo: marketAccount.address,
               notify: true,
               deployWalletValue: 0,
               payload,
@@ -289,16 +318,16 @@ describe('Test Market contract', async function () {
           let curr_supply = await getTotalSupply(market)
           let curr_count = await getPurchaseCount(market)
           
-          const res = await account.runTarget({
+          const res = await marketAccount.runTarget({
             contract: market,
             method: 'mintNft',
-            params: { owner: account.address, json: ex_json },
+            params: { owner: marketAccount.address, json: ex_json },
             keyPair: user1,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
           
           // Set NFT Owner
-          let nftOwner = account.address;
+          let nftOwner = marketAccount.address;
 
           let setPayload = (i) => market.call({
             method: '_serializeNftPurchase',
@@ -310,13 +339,13 @@ describe('Test Market contract', async function () {
 
           // Run Purchase Higher Than Count
           // This calls onAcceptTokensTransfer back to Market
-          Promise.all(Array(curr_supply + 1).map( async (_, index) => account.runTarget({
+          Promise.all(Array(curr_supply + 1).map( async (_, index) => marketAccount.runTarget({
             contract: wallet1,
             method: 'transfer',
             params: {
               amount: 11,
               recipient: market.address,
-              remainingGasTo: account.address,
+              remainingGasTo: marketAccount.address,
               notify: true,
               deployWalletValue: 0,
               payload: await setPayload(index)
