@@ -7,7 +7,7 @@
     "test-remote": "NODE_OPTIONS='-r ts-node/register --no-warnings' locklift test --disable-build --network dev --config locklift.config.js --test test",
     "test": "NODE_OPTIONS='-r ts-node/register --no-warnings' locklift test --disable-build --network local --config locklift.config.js --test test",
     "build": "export TVM_LINKER_LIB_PATH=$PWD/TON-Solidity-Compiler/lib/stdlib_sol.tvm && locklift build --config locklift.config.js",
-    "deploy-market-local": "locklift run -n local --config locklift.config.js --script 1-deploy-market"
+    "deploy-market-local": "NODE_OPTIONS='-r ts-node/register --no-warnings' locklift run -n local --config locklift.config.js --script 1-deploy-market.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "@types/mocha": "^9.1.0",
     "bignumber.js": "^9.0.2",
     "locklift": "^1.5.3",
+    "mocha-logger": "^1.0.8",
     "ora": "^3.4.0",
     "prompts": "^2.4.1",
     "ts-node": "^10.7.0"

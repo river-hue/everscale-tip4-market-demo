@@ -1,15 +1,18 @@
 import BigNumber from "bignumber.js";
+const logger = require('mocha-logger');
 
 declare var locklift: LockLift;
 
 export interface LockLift {
   factory: { getContract: (contract: string) => Promise<Contract>, getAccount: (type: string) => Promise<Account> },
   keys: { getKeyPairs: () => Promise<KeyPair[]>},
-  utils: { convertCrystal: (balance: number| string, type: 'nano' | string ) => string, zeroAddress: string }
+  utils: { convertCrystal: (balance: number| string, type: 'nano' | string ) => string, zeroAddress: string },
+  ton: { getBalance: (address: string) => string }
   giver: Account
 }
 export interface KeyPair { public: string, private: string }
 export interface Contract { 
+  name: string,
   address: string,
   keyPair: KeyPair,
   code: string,
@@ -25,6 +28,11 @@ export interface Account extends Contract  {
 export const isValidTonAddress = (address: string) => /^(?:-1|0):[0-9a-fA-F]{64}$/.test(address);
 
 export const getRandomNonce = () => Math.random() * 64000 | 0;
+
+export async function logContract(contract: Contract) {
+  const balance = await locklift.ton.getBalance(contract.address);
+  logger.log(`${contract.name} (${contract.address}) - ${locklift.utils.convertCrystal(balance, 'ton')}`);
+};
 
 export async function deployAccount(keyPair: KeyPair, balance: number): Promise<Account> {
   const account = await locklift.factory.getAccount("Wallet");
