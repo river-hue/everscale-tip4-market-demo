@@ -78,7 +78,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         require(msg.sender == _tokenWallet, TokenErrors.WRONG_WALLET_OWNER);
 
         // Check Payload
-        (address newOwner, string json) = _deserializeNftPurchase(payload);
+        (address newOwner) = _deserializeNftPurchase(payload);
 
         // Check if Tickets are not Oversold
         // Check if Price is Correct
@@ -104,14 +104,13 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }
     }
 
-    function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever, string json) {
-        return abi.decode(payload, (address, string));
+    function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever) {
+        return abi.decode(payload, (address));
     }
 
-    function _serializeNftPurchase(address recipient, string json) public pure returns (TvmCell payload) {
+    function _serializeNftPurchase(address recipient) public pure returns (TvmCell payload) {
         TvmBuilder encoder;
         encoder.store(recipient);
-        encoder.store(json);
         return encoder.toCell();
     }
 

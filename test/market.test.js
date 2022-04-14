@@ -205,12 +205,6 @@ describe('Test Market contract', async function () {
 
           const account2 = await deployAccount(keyPairs[1], 100)
 
-          // await market.run({
-          //   method: 'mintNft',
-          //   params: { owner: marketAccount.address, json: ex_json },
-          //   keyPair: user1,
-          // }, locklift.utils.convertCrystal(3, 'nano'))
-
           const res = await marketAccount.runTarget({
             contract: market,
             method: 'mintNft',
@@ -219,13 +213,13 @@ describe('Test Market contract', async function () {
             value: locklift.utils.convertCrystal(2, 'nano')
           })
 
-          // const res_json = await nft.call({
-          //   method: 'getJson',
-          //   params: { answerId: 0 }
-          // })
+          const res_json = await nft.call({
+            method: 'getJson',
+            params: { answerId: 0 }
+          })
 
           let after = await getTotalSupply(market)
-          // expect(res_json).to.equal(ex_json)
+          expect(res_json).to.equal(ex_json)
           expect(after.toNumber()).to.be.greaterThan(before.toNumber())
         })
 
@@ -281,7 +275,6 @@ describe('Test Market contract', async function () {
             method: '_serializeNftPurchase',
             params: {
               recipient: nftOwner,
-              json: '{}'
             }
           })
 

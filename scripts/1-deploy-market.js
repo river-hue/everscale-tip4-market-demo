@@ -1,6 +1,5 @@
 const getRandomNonce = () => Math.random() * 64000 | 0;
 
-
 async function main() {
   const Sample = await locklift.factory.getContract('Sample');
   const [keyPair] = await locklift.keys.getKeyPairs();
