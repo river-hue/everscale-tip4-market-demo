@@ -250,6 +250,58 @@ describe('Test Market contract', async function () {
     })
     describe('Purchase', function () {
       describe('.onAcceptTokensTransfer', function () {
+        it('should not sell nft if less than price', async function() {
+          this.timeout(20000)
+          const nft = await locklift.factory.getContract("Nft");
+
+          const keyPairs = await locklift.keys.getKeyPairs();
+          const user1 = keyPairs[0];
+
+          // Mint 2 NFT
+          await Promise.all(Array(1).map((_, index) => marketAccount.runTarget({
+            contract: market,
+            method: 'mintNft',
+            params: { owner: market.address, json: `{"index": "${index}"}` },
+            keyPair: user1,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })))
+
+          // Set NFT Owner
+          let nftOwner = marketAccount.address;
+          let before = await getPurchaseCount(market)
+
+          let payload = await market.call({
+            method: '_serializeNftPurchase',
+            params: {
+              recipient: nftOwner,
+            }
+          })
+
+          // Run Purchase
+          // This calls onAcceptTokensTransfer back to Market
+          await marketAccount.runTarget({
+            contract: wallet1,
+            method: 'transfer',
+            params: {
+              amount: 9,
+              recipient: market.address,
+              remainingGasTo: marketAccount.address,
+              notify: true,
+              deployWalletValue: 0,
+              payload,
+            },
+            keyPair: user1,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
+
+          let after = await getPurchaseCount(market)
+          let nftAddr = await getNftById(market, after)
+
+          nft.setAddress(nftAddr)
+          nft.setKeyPair(user1)
+
+          expect(after.toNumber()).to.be.equal(before.toNumber())
+        })
         it('should sell nft if in order', async function () {
           this.timeout(20000)
           const nft = await locklift.factory.getContract("Nft");

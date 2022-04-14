@@ -21,7 +21,6 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     address _tokenRoot;
     uint256 _minNftTokenPrice;
     uint256 _purchaseCount;
-    address _testOwner;
 
     constructor(
         address tokenRoot,
@@ -48,17 +47,17 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }(address(this), 0.1 ton);
     }
 
-    function mintNft(address owner, string json) public virtual onlyOwner {
-        // require(msg.sender == _testOwner, 100);
-        _mintNft(owner, json);
-    }
 
     function purchaseCount() external view virtual responsible returns (uint count) {
-        return {value: 0, flag: 64, bounce: false} (_purchaseCount);
+        return {value: 0, flag: 64, bounce: true} (_purchaseCount);
     }
 
     function tokenWallet() external view virtual responsible returns (address wallet) {
-        return {value: 0, flag: 64, bounce: false} (_tokenWallet);
+        return {value: 0, flag: 64, bounce: true} (_tokenWallet);
+    }
+
+    function mintNft(address owner, string json) public virtual onlyOwner {
+        _mintNft(owner, json);
     }
 
     function setTokenWallet(address newTokenWallet) public {
