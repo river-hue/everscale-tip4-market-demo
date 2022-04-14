@@ -1,6 +1,6 @@
 const { expect } = require("chai")
 const BigNumber = require("bignumber.js");
-const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, getTotalSupply, getNftById, getPurchaseCount } = require("./utils.js");
+const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, getTotalSupply, getNftById, getPurchaseCount } = require("./utils.ts");
 
 describe('Test Market contract', async function () {
   let market;
@@ -23,7 +23,7 @@ describe('Test Market contract', async function () {
       const user1 = keyPairs[0];
 
       marketAccount = await deployAccount(user1, 100)
-      tokenRoot = await deployTokenRoot(marketAccount, 'Test Token', 'TST', '4')
+      tokenRoot = await deployTokenRoot(marketAccount, {name: 'Test Token', symbol: 'TST', decimals: '4'})
       market = await deployMarket(marketAccount, tokenRoot)
 
       return expect(market.address).to.be.a('string')

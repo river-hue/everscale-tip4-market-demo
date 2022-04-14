@@ -36,17 +36,9 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         ownerPubkey
     ) public {
        tvm.accept();
-       _tokenRoot = tokenRoot;
        _minNftTokenPrice = minNftTokenPrice;
-       
-       TokenRoot(tokenRoot).deployWallet{
-           value: 0.5 ton,
-           flag: 1,
-           callback: setTokenWallet,
-           bounce: true
-        }(address(this), 0.1 ton);
+       _setTokenRoot(tokenRoot);
     }
-
 
     function purchaseCount() external view virtual responsible returns (uint count) {
         return {value: 0, flag: 64, bounce: true} (_purchaseCount);
@@ -64,6 +56,25 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         require(msg.sender == _tokenRoot, TokenErrors.WRONG_ROOT_OWNER);
         tvm.accept();
         _tokenWallet = newTokenWallet;
+    }
+
+    function setTokenRoot(address tokenRoot) public onlyOwner {
+        _setTokenRoot(tokenRoot);
+    }
+
+    function _setTokenRoot(address tokenRoot) internal {
+        _tokenRoot = tokenRoot;
+       TokenRoot(tokenRoot).deployWallet{
+           value: 0.5 ton,
+           flag: 1,
+           callback: setTokenWallet,
+           bounce: true
+        }(address(this), 0.1 ton);
+    }
+
+    function setMinNftTokenPrice(uint256 minNftTokenPrice) public onlyOwner {
+        tvm.accept();
+        _minNftTokenPrice= minNftTokenPrice;
     }
 
     function onAcceptTokensTransfer(
