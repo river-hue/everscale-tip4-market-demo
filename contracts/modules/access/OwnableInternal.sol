@@ -17,7 +17,6 @@ abstract contract OwnableInternal {
     }
 
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner.value != 0, 100);
         _transferOwnership(newOwner);
     }
 
@@ -29,8 +28,7 @@ abstract contract OwnableInternal {
 
     /// @dev придумать, как хранить ошибки в extensions
     modifier onlyOwner() virtual {
-        require(owner() == address(msg.pubkey()), 100);
-        require(msg.value != 0, 101);
+        require(_owner == msg.sender, 100);
         tvm.accept();
         _;
     }

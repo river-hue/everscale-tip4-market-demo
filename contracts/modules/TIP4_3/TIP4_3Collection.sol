@@ -6,14 +6,14 @@ pragma AbiHeader pubkey;
 
 
 import '../TIP4_1/TIP4_1Collection.sol';
-import '../access/OwnableExternal.sol';
+import '../access/OwnableInternal.sol';
 import './interfaces/ITIP4_3Collection.sol';
 import './TIP4_3Nft.sol';
 import './Index.sol';
 import './IndexBasis.sol';
 
 
-abstract contract TIP4_3Collection is TIP4_1Collection, ITIP4_3Collection, OwnableExternal {
+abstract contract TIP4_3Collection is TIP4_1Collection, ITIP4_3Collection, OwnableInternal {
     
     TvmCell _codeIndex;
     TvmCell _codeIndexBasis;
@@ -26,8 +26,8 @@ abstract contract TIP4_3Collection is TIP4_1Collection, ITIP4_3Collection, Ownab
     constructor(
         TvmCell codeIndex,
         TvmCell codeIndexBasis,
-        uint256 ownerPubkey
-    ) OwnableExternal(
+        address ownerPubkey
+    ) OwnableInternal(
         ownerPubkey
     ) public {
         TvmCell empty;

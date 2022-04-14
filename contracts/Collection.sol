@@ -16,7 +16,7 @@ contract Collection is TIP4_3Collection {
 		TvmCell codeNft,
 		TvmCell codeIndex,
 		TvmCell codeIndexBasis,
-		uint256 ownerPubkey
+		address ownerPubkey
 	)
 		public
 		TIP4_1Collection(codeNft)
