@@ -16,6 +16,7 @@ export interface Contract {
   address: string,
   keyPair: KeyPair,
   code: string,
+  abi: string,
   setAddress: (address: string) => void;
   call: (opts: {method: string, params: any}) => Promise<any>,
 };
