@@ -1,11 +1,12 @@
 const { expect } = require("chai")
 const BigNumber = require("bignumber.js");
-const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, getTotalSupply, getNftById, getPurchaseCount } = require("./utils.ts");
+const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, Locklift, getTotalSupply, getNftById, getPurchaseCount } = require("./utils.ts");
+const { getTokenWallet, logContract } = require("./utils");
 
 describe('Test Market contract', async function () {
   let market;
   let tokenRoot;
-  let wallet1;
+  let marketAccountWallet;
   let marketAccount;
 
   describe('Contracts', async function () {
@@ -33,25 +34,106 @@ describe('Test Market contract', async function () {
     it('Should Deploy Wallet Contract', async function () {
       this.timeout(800000);
 
-      wallet1 = await deployTokenWallet(marketAccount, tokenRoot, 1000);
+      marketAccountWallet = await deployTokenWallet(marketAccount, tokenRoot, 1000);
 
-      expect(wallet1.address).to.be.a('string')
+      expect(marketAccountWallet.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
     })
   })
 
   describe('Market', async function () {
     describe('Owner', function () {
+      describe('.transfer()', async function() {
+        it('should transfer from MarketAccount', async function() {
+          this.timeout(20000);
+          
+          let marketWallet = await getTokenWallet(market);
+
+          let start_acc = await marketAccountWallet.call({
+            method: 'balance',
+            params: { answerId: 0}
+          })
+          let start_market = await marketWallet.call({
+            method: 'balance',
+            params: {answerId: 0}
+          })
+
+          let payload = await market.call({
+            method: '_serializeNftPurchase',
+            params: {
+              recipient: locklift.utils.zeroAddress,
+            }
+          })
+
+          // Send Tokens from MarketAccount to MarketWallet
+          // This calls onAcceptTokensTransfer back to Market
+          await marketAccount.runTarget({
+            contract: marketAccountWallet,
+            method: 'transfer',
+            params: {
+              amount: 8,
+              recipient: market.address,
+              remainingGasTo: marketAccount.address,
+              notify: false,
+              deployWalletValue: 0,
+              payload: payload,
+            },
+            keyPair: marketAccount.keyPair,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
+
+          let prev_acc = await marketAccountWallet.call({
+            method: 'balance',
+            params: { answerId: 0}
+          })
+          let prev_market = await marketWallet.call({
+            method: 'balance',
+            params: {answerId: 0}
+          })
+
+          expect(prev_acc.toNumber()).to.equal(start_acc.toNumber() - 8 )
+          expect(prev_market.toNumber()).to.equal(start_market.toNumber() + 8)
+
+          // Send Tokens Back to MarketAccount
+          await marketAccount.runTarget({
+            contract: market,
+            method: '_transfer',
+            params:  {
+              amount: 7,
+              recipient: marketAccount.address,
+              remainingGasTo: marketAccount.address,
+              notify: false,
+              deployWalletValue: 0,
+              payload: payload,
+            },
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
+          
+          let after_acc = await marketAccountWallet.call({
+            method: 'balance',
+            params: { answerId: 0}
+          })
+          let after_market = await marketWallet.call({
+            method: 'balance',
+            params: {answerId: 0}
+          })
+
+          // Check Transfer
+          expect(after_acc.toNumber()).to.equal(prev_acc.toNumber() + 7)
+          expect(after_market.toNumber()).to.equal(prev_market.toNumber() - 7)
+
+        })
+      })
       describe('.mintNft()', async function () {
         it('Should mint new Nft', async function () {
           this.timeout(20000);
 
           const keyPairs = await locklift.keys.getKeyPairs();
-          const user1 = keyPairs[0];
 
           let ex_json = "{name:'Jerry'}";
           let before = await getTotalSupply(market)
           let nftId = before.toNumber();
+
           let nft = await getNftById(market, nftId)
 
           const account2 = await deployAccount(keyPairs[1], 100)
@@ -60,18 +142,18 @@ describe('Test Market contract', async function () {
             contract: market,
             method: 'mintNft',
             params: { owner: account2.address, json: ex_json },
-            // keyPair: marketAccount.keyPair,
+            keyPair: marketAccount.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
+          
+          let after = await getTotalSupply(market)
+          expect(after.toNumber()).to.be.greaterThan(before.toNumber())
 
           const res_json = await nft.call({
             method: 'getJson',
             params: { answerId: 0 }
           })
-
-          let after = await getTotalSupply(market)
           expect(res_json).to.equal(ex_json)
-          expect(after.toNumber()).to.be.greaterThan(before.toNumber())
         })
 
         it('should reject if not owner', async function () {
@@ -128,7 +210,7 @@ describe('Test Market contract', async function () {
           // Run Purchase
           // This calls onAcceptTokensTransfer back to Market
           await marketAccount.runTarget({
-            contract: wallet1,
+            contract: marketAccountWallet,
             method: 'transfer',
             params: {
               amount: 9,
@@ -176,7 +258,7 @@ describe('Test Market contract', async function () {
           // Run Purchase
           // This calls onAcceptTokensTransfer back to Market
           await marketAccount.runTarget({
-            contract: wallet1,
+            contract: marketAccountWallet,
             method: 'transfer',
             params: {
               amount: 11,
@@ -225,7 +307,7 @@ describe('Test Market contract', async function () {
           // Run Purchase Higher Than Count
           // This calls onAcceptTokensTransfer back to Market
           Promise.all(Array(curr_supply + 1).map(async (_, index) => marketAccount.runTarget({
-            contract: wallet1,
+            contract: marketAccountWallet,
             method: 'transfer',
             params: {
               amount: 11,

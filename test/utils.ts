@@ -51,12 +51,12 @@ export async function deployAccount(keyPair: KeyPair, balance: number): Promise<
   return account;
 }
 
-export async function deployTokenRoot(account: Account, config: { name: string, symbol: string, decimals: string, initialSupply?: string, deployWalletValue?: string }) {
+export async function deployTokenRoot(account: Account, config: { name: string, symbol: string, decimals: string, initialSupply?: string, deployWalletValue?: string }): Promise<Contract> {
   let { name, symbol, decimals, initialSupply, deployWalletValue } = config;
   decimals = decimals || '4'
   initialSupply = initialSupply || new BigNumber(10000000).shiftedBy(2).toFixed()
   deployWalletValue = deployWalletValue || locklift.utils.convertCrystal('1', 'nano')
-
+  
   const TokenRoot = await locklift.factory.getContract("TokenRoot");
   const TokenWallet = await locklift.factory.getContract("TokenWallet");
 
@@ -158,16 +158,21 @@ export function getPurchaseCount(market: Contract) {
   });
 }
 
-export function getTokenWallet(market: Contract) {
-  return market.call({
+export async function getTokenWallet(market: Contract): Promise<Contract> {
+  const tokenWallet = await locklift.factory.getContract("TokenWallet");
+  let walletAddr = await market.call({
     method: 'tokenWallet',
     params: {
       answerId: 0
     }
   });
+
+  tokenWallet.setAddress(walletAddr);
+
+  return tokenWallet;
 }
 
-export async function getNftById(market: Contract, id: number) {
+export async function getNftById(market: Contract, id: number): Promise<Contract> {
   let nft = await locklift.factory.getContract("Nft");
   let nftAddr = await market.call({
     method: 'nftAddress',

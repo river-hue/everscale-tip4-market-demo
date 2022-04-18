@@ -1,8 +1,10 @@
-import ora from 'ora'
-import prompts from 'prompts';
+const ora = require('ora')
+const prompts = require('prompts')
 
-import { deployMarket, deployAccount, deployTokenRoot, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract } from '../test/utils';
-declare var locklift: LockLift;
+const { deployMarket, deployAccount, deployTokenRoot, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract } = require('../test/utils')
+
+/** @type {LockLift} */
+var locklift = global.locklift;
 
 async function main() {
   const [keyPair] = await locklift.keys.getKeyPairs();
@@ -25,20 +27,13 @@ async function main() {
       name: 'nftPrice',
       message: 'Price of Nft in Tokens',
       initial: 10
-    },
-    {
-      type: 'number',
-      name: 'remainOnNft',
-      message: 'Duration (in seconds) how long proposal is open for voting',
-      initial: 0
-    },
+    }
   ])
 
   let config = {
     owner: response.owner,
     tokenRoot: response.tokenRoot,
     nftPrice: response.nftPrice,
-    remainOnNft: response.remainOnNft
   }
 
   let tokenRoot = await locklift.factory.getContract("TokenRoot")
@@ -46,15 +41,15 @@ async function main() {
 
   const spinner = ora('Deploying Market').start();
   let tempAdmin = await deployAccount(keyPair, 100)
-  let market = await deployMarket(tempAdmin, tokenRoot, { minNftTokenPrice: config.nftPrice, remainOnNft: config.remainOnNft })
+  let market = await deployMarket(tempAdmin, tokenRoot, { minNftTokenPrice: config.nftPrice, remainOnNft: 0 })
 
   spinner.text = 'Transfer Admin';
   /// Set Owner
   await tempAdmin.runTarget({
     contract: market,
-    method: 'changeOwner',
+    method: 'transferOwnership',
     params: {
-      owner: config.owner.address
+      newOwner: config.owner
     },
     keyPair: tempAdmin.keyPair,
     value: locklift.utils.convertCrystal(1, 'nano')

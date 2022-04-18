@@ -11,7 +11,6 @@ import './modules/TokenContracts/TokenRoot.sol';
 import './modules/TIP4_3/TIP4_3Collection.sol';
 import './modules/TIP4_1/TIP4_1Collection.sol';
 
-
 import './Nft.sol';
 import "./Collection.sol";
 
@@ -87,8 +86,9 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     ) override external {
         require(msg.sender == _tokenWallet, TokenErrors.WRONG_WALLET_OWNER);
 
-        // Check Payload
+        // Check Payload, if zero, accept transfer with no purchase
         (address newOwner) = _deserializeNftPurchase(payload);
+        if (newOwner == address(0)) return;
 
         // Check if Tickets are not Oversold
         // Check if Price is Correct
@@ -98,12 +98,12 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             mapping(address => ITIP4_1NFT.CallbackParams) empty;
             Nft(nftAddr).changeOwner{
                 value: 0 ton,
-                flag: 1,
+                flag: 64,
                 bounce: true
             }(newOwner, remainingGasTo, empty);
         } else {
             // Else Return Tokens Back to Sender
-            ITokenWallet(msg.sender).transfer{value: 0 , flag: 128, bounce: false}(
+            ITokenWallet(msg.sender).transfer{value: 0 , flag: 64, bounce: false}(
                 amount,
                 sender,
                 0,
@@ -112,6 +112,21 @@ contract Market is Collection, IAcceptTokensTransferCallback {
                 payload
             );
         }
+    }
+
+    // TokenWallet
+    function _transfer(
+        uint128 amount,
+        address recipient,
+        uint128 deployWalletValue,
+        address remainingGasTo,
+        bool notify,
+        TvmCell payload
+    )
+        external
+        onlyOwner
+    {
+        ITokenWallet(_tokenWallet).transfer{value: 0 , flag: 64, bounce: true}(amount, recipient, deployWalletValue, remainingGasTo, notify, payload);
     }
 
     function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever) {
