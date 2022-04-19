@@ -10,7 +10,7 @@ export interface LockLift {
   ton: { getBalance: (address: string) => string }
   giver: Account
 }
-export interface KeyPair { public: string, private: string }
+export interface KeyPair { public: string, secret: string }
 export interface Contract { 
   name: string,
   address: string,
@@ -22,8 +22,36 @@ export interface Contract {
 };
 export interface Account extends Contract  { 
   setKeyPair: (keyPair: KeyPair) => void,
-  deployContract: (opts: { contract: Contract, constructorParams: any, initParams: any, keyPair: KeyPair }, value?: string) => Promise<any>,
-  runTarget: (opts: {contract: Contract, method: string, params: any, keyPair: KeyPair, value: string}) => Promise<any>
+  deployContract: (opts: { contract: Contract, constructorParams: any, initParams: any, keyPair: KeyPair }, value?: string) => Promise<Contract>,
+  runTarget: (opts: {contract: Contract, method: string, params: any, keyPair: KeyPair, value: string}) => Promise<Tx>
+}
+
+export interface Tx {
+  transaction: {
+    json_version: number,
+    id: string,
+    boc: string,
+    status: number,
+    status_name: string,
+    storage: {
+      storage_fees_collected: string,
+      status_change: number,
+      status_change_name: string
+    },
+    action: {
+      success: boolean,
+      valid: boolean,
+      no_funds: boolean,
+      result_code: number,
+    },
+    now: number,
+    in_msg: string,
+    out_msgs: string[],
+    account_addr: string,
+    old_hash: string,
+    new_hash: string,
+  },
+  out_messages: string[],
 }
 
 export const isValidTonAddress = (address: string) => /^(?:-1|0):[0-9a-fA-F]{64}$/.test(address);
