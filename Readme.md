@@ -29,3 +29,16 @@ npm run build
 # Run Tests
 npm test
 ```
+
+## Deployment
+```bash
+#Deploy Market on Testnet
+npm run deploy-local scripts/2-deploy-market.js
+#Mint NFTS from folder on Local
+npm run deploy-local scripts/3-mint-nft.js
+
+#Deploy Market on MainNet
+MAIN_GIVER_KEY=... npm run deploy-main scripts/2-deploy-market.js
+#Mint NFTS from folder on MainNet
+MAIN_GIVER_KEY=... npm run deploy-main scripts/3-mint-nft.js
+```

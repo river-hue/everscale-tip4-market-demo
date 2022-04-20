@@ -6,3 +6,6 @@ build/
 compiled/
 TON-Solidity-Compiler/
 TVM-linker/
+
+#KEYS
+*.key

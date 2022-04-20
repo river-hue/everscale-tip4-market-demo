@@ -65,13 +65,17 @@ async function main() {
     let files = await Promise.all(filesPromise);
 
     spinner.frame()
+
     spinner.text = 'Storing to IPFS'
     const ipfs = await IPFS.create();
+    
     let results = []
     for await (const item of ipfs.addAll(files)) {
         spinner.text = `Storing IPFS ${results.length}/${files.length}: "${item.path}" cid:${item.cid}`;
         results.push(item)
     }
+
+    spinner.text = 'Minting NFTS to Market'
     const tx_results = []
     for (const [i, result] of results.entries()) {
         let payload = JSON.stringify(result)
@@ -84,7 +88,7 @@ async function main() {
             value: locklift.utils.convertCrystal(2, 'nano')
         })
         spinner.text = `Minted NFT ${i}/${results.length}: ${result.path}: Tx: ${tx.transaction.id}`
-        tx_results.push({txStatus: tx.transaction.status_name, txId: tx.transaction.id, nftId, json: payload})
+        tx_results.push({txStatus: tx.transaction.status_name, txId: tx.transaction.id, json: payload})
     }
     spinner.stopAndPersist({text: 'Minting Completed, Outputting Result'})
     console.log(tx_results)

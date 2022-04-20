@@ -1,14 +1,18 @@
-import { expect } from "chai";
-import BigNumber = require("bignumber.js");
-import { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, LockLift, Account, Contract, getTokenWallet, logContract, getTotalSupply, getNftById, getPurchaseCount } from "./utils";
+const { expect } = require("chai");
+const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, LockLift, Account, Contract, getTokenWallet, logContract, getTotalSupply, getNftById, getPurchaseCount } = require("./utils");
 
-declare var locklift: LockLift;
+/** @type {LockLift} */
+var locklift = global.locklift;
 
 describe('Test Market contract', async function () {
-  let market: Contract;
-  let tokenRoot: Contract;
-  let marketAccountWallet: Contract;
-  let marketAccount: Account;
+/** @type {Contract} */
+  let market;
+/** @type {Contract} */
+  let tokenRoot;
+/** @type {Contract} */
+  let marketAccountWallet;
+/** @type {Account} */
+  let marketAccount;
 
   describe('Contracts', async function () {
     it('Should Load contract factory', async function () {
