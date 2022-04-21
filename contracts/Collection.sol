@@ -50,7 +50,6 @@ contract Collection is TIP4_3Collection {
 		emit NftCreated(id, nftAddr, owner, msg.sender, msg.sender);
 	}
 
-
 	function setRemainOnNft(uint128 remainOnNft) external virtual onlyOwner {
 		_remainOnNft = remainOnNft;
 	}
@@ -67,5 +66,10 @@ contract Collection is TIP4_3Collection {
 		returns (TvmCell)
 	{
 		return tvm.buildStateInit({contr: Nft, varInit: {_id: id}, code: code});
+	}
+
+	function resolveIndexCodeHash(address collection, address owner) public view returns (uint256 hash) {
+		TvmCell code = _buildIndexCode(collection, owner);
+		return tvm.hash(code);
 	}
 }
