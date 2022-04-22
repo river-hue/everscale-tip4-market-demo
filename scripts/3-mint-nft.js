@@ -4,28 +4,29 @@ const fs = require('fs/promises')
 const path = require('path')
 const IPFS = require('ipfs-core')
 
-const { deployMarket, deployAccount, deployTokenRoot, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract, getTotalSupply } = require('../test/utils')
+const { deployMarket, deployAccount, deployTokenRoot, getAccount, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract, getTotalSupply } = require('../test/utils')
 
 /** @type {LockLift} */
 var locklift = global.locklift;
 
 async function main() {
-    const [keyPair] = await locklift.keys.getKeyPairs();
-    // Deploy TempAccount
-    let tempAdmin = await deployAccount(keyPair, 100)
 
     const response = await prompts([
         {
             type: 'text',
+            name: 'account',
+            message: 'Get Market Owner Address',
+            validate: value => isValidTonAddress(value) ? true : 'Invalid Everscale address'
+        },
+        {
+            type: 'text',
             name: 'public',
             message: 'Get Market Owner Pubkey',
-            initial: tempAdmin.keyPair.public
         },
         {
             type: 'text',
             name: 'secret',
             message: 'Get Market Owner PrivateKey',
-            initial: tempAdmin.keyPair.secret
         },
         {
             type: 'text',
@@ -33,6 +34,18 @@ async function main() {
             message: 'Market Address',
             validate: value => isValidTonAddress(value) ? true : 'Invalid Everscale address'
         },
+        // {
+        //     type: 'text',
+        //     name: 'file',
+        //     message: 'Provide a file of NFT/*.png/*.jpeg to Deploy',
+        //     validate: p => path.extname(p)=== '.png' || path.extname(p) === '.jpg'
+        // },
+        // {
+        //     type: 'number',
+        //     name: 'copyamount',
+        //     message: 'Provide how many copies to deploy',
+        //     initial: 1
+        // },
         {
             type: 'text',
             name: 'folder',
@@ -41,7 +54,21 @@ async function main() {
         }
     ])
 
-    const marketAccount = response.secret == tempAdmin.keyPair.secret ? tempAdmin : await deployAccount(response, 100)
+    await deployFolder(response)
+}
+
+async function deployFile(response) {
+    const marketOwner = await getAccount(response, response.account)
+    const filePath = path.resolve('.', response.file)
+    const market = await locklift.factory.getContract("Market")
+    market.setAddress(response.marketAddr)
+    const amount = response.amount;
+
+    const spinner = ora('Deploying NFT').start();
+
+}
+async function deployFolder(response) {
+    const marketOwner = await getAccount(response, response.account)
     const folderPath = path.resolve('.', response.folder)
     const market = await locklift.factory.getContract("Market")
     market.setAddress(response.marketAddr)
@@ -80,11 +107,11 @@ async function main() {
     for (const [i, result] of results.entries()) {
         let payload = JSON.stringify(result)
         spinner.text = `Minting NFT ${i}/${results.length}: ${result.path}:`
-        let tx = await marketAccount.runTarget({
+        let tx = await marketOwner.runTarget({
             contract: market,
             method: 'mintNft',
             params: { owner: market.address, json: payload },
-            keyPair: marketAccount.keyPair,
+            keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
         })
         spinner.text = `Minted NFT ${i}/${results.length}: ${result.path}: Tx: ${tx.transaction.id}`

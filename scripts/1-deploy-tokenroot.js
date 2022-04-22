@@ -37,7 +37,7 @@ async function main() {
       type: 'number',
       name: 'tokenDecimals',
       message: 'Decimals',
-      initial: 10
+      initial: 2
     }
   ])
 
@@ -54,6 +54,7 @@ async function main() {
     symbol: config.tokenSymbol,
     decimals: config.tokenDecimals,
   })
+
   spinner.text = 'Transfer Admin';
 
   // Set Owner
@@ -72,6 +73,8 @@ async function main() {
 
   await logContract(tokenRoot)
   console.log(`Admin: ${config.owner}`)
+  console.log(`TempAdmin keyPair:`)
+  console.log(tempAdmin.keyPair)
 }
 
 main()

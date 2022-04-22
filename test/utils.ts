@@ -63,6 +63,13 @@ export async function logContract(contract: Contract) {
   logger.log(`${contract.name} (${contract.address}) - ${locklift.utils.convertCrystal(balance, 'ton')}`);
 };
 
+export async function getAccount(keyPair: KeyPair, address: string) {
+  const account = await locklift.factory.getAccount("Wallet")
+  account.setKeyPair(keyPair)
+  account.setAddress(address)
+  return account;
+}
+
 export async function deployAccount(keyPair: KeyPair, balance: number): Promise<Account> {
   const account = await locklift.factory.getAccount("Wallet");
 
@@ -84,8 +91,10 @@ export async function deployTokenRoot(account: Account, config: { name: string, 
   let { name, symbol, decimals, initialSupply, deployWalletValue } = config;
   decimals = decimals || '4'
   initialSupply = initialSupply || new BigNumber(10000000).shiftedBy(2).toFixed()
-  deployWalletValue = deployWalletValue || locklift.utils.convertCrystal('1', 'nano')
-  
+  // deployWalletValue = deployWalletValue || locklift.utils.convertCrystal('1', 'nano')
+  deployWalletValue = locklift.utils.convertCrystal('0.1', 'nano')
+
+  console.log(deployWalletValue)
   const TokenRoot = await locklift.factory.getContract("TokenRoot");
   const TokenWallet = await locklift.factory.getContract("TokenWallet");
 

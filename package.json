@@ -8,6 +8,7 @@
     "test": "NODE_OPTIONS='-r ts-node/register --no-warnings' locklift test --disable-build --network local --config locklift.config.js --test test",
     "build": "TVM_LINKER_LIB_PATH=$PWD/TON-Solidity-Compiler/lib/stdlib_sol.tvm locklift build --config locklift.config.js",
     "deploy-local": "TVM_LINKER_LIB_PATH=$PWD/TON-Solidity-Compiler/lib/stdlib_sol.tvm NODE_OPTIONS='-r ts-node/register --no-warnings' locklift run --disable-build -n local --config locklift.config.js --script",
+    "deploy-dev": "TVM_LINKER_LIB_PATH=$PWD/TON-Solidity-Compiler/lib/stdlib_sol.tvm NODE_OPTIONS='-r ts-node/register --no-warnings' locklift run --disable-build -n dev --config locklift.config.js --script",
     "deploy-main": "TVM_LINKER_LIB_PATH=$PWD/TON-Solidity-Compiler/lib/stdlib_sol.tvm NODE_OPTIONS='-r ts-node/register --no-warnings' locklift run --disable-build -n main --config locklift.config.js --script"
   },
   "author": "",
