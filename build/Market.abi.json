@@ -17,6 +17,15 @@
 			]
 		},
 		{
+			"name": "minNftTokenPrice",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"amount","type":"uint256"}
+			]
+		},
+		{
 			"name": "purchaseCount",
 			"inputs": [
 				{"name":"answerId","type":"uint32"}

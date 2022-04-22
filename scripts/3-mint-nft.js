@@ -34,27 +34,27 @@ async function main() {
             message: 'Market Address',
             validate: value => isValidTonAddress(value) ? true : 'Invalid Everscale address'
         },
-        // {
-        //     type: 'text',
-        //     name: 'file',
-        //     message: 'Provide a file of NFT/*.png/*.jpeg to Deploy',
-        //     validate: p => path.extname(p)=== '.png' || path.extname(p) === '.jpg'
-        // },
-        // {
-        //     type: 'number',
-        //     name: 'copyamount',
-        //     message: 'Provide how many copies to deploy',
-        //     initial: 1
-        // },
         {
             type: 'text',
-            name: 'folder',
-            message: 'Provide a folder of NFT/*.png/*.jpeg to Deploy',
-            validate: folder => path.extname(folder) === ''
-        }
+            name: 'file',
+            message: 'Provide a file of NFT/*.png/*.jpeg to Deploy',
+            validate: p => path.extname(p)=== '.png' || path.extname(p) === '.jpg'
+        },
+        {
+            type: 'number',
+            name: 'copyamount',
+            message: 'Provide how many copies to deploy',
+            initial: 1
+        },
+        // {
+        //     type: 'text',
+        //     name: 'folder',
+        //     message: 'Provide a folder of NFT/*.png/*.jpeg to Deploy',
+        //     validate: folder => path.extname(folder) === ''
+        // }
     ])
 
-    await deployFolder(response)
+    await deployFile(response)
 }
 
 async function deployFile(response) {
@@ -62,11 +62,46 @@ async function deployFile(response) {
     const filePath = path.resolve('.', response.file)
     const market = await locklift.factory.getContract("Market")
     market.setAddress(response.marketAddr)
-    const amount = response.amount;
+    const amount = response.copyamount;
 
     const spinner = ora('Deploying NFT').start();
 
+    let buff = await fs.readFile(filePath)
+    let file = {
+        path: path.basename(filePath),
+        content: buff
+        // mode: undefined,
+        // mtime: undefined
+    }
+    spinner.frame()
+    spinner.text = 'Storing to IPFS'
+    const ipfs = await IPFS.create();
+
+    let item = await ipfs.add(file)
+    spinner.text = `Storing IPFS "${item.path}" cid:${item.cid}`;
+
+    spinner.text = 'Minting Nfts to Market'
+    let payload = JSON.stringify(item)
+
+    const tx_results = []
+
+    for (let i = 0; i < amount; i++) {
+        spinner.text = `Minting NFT ${i}/${amount}: ${item.path}:`
+        let tx = await marketOwner.runTarget({
+            contract: market,
+            method: 'mintNft',
+            params: { owner: market.address, json: payload },
+            keyPair: marketOwner.keyPair,
+            value: locklift.utils.convertCrystal(2, 'nano')
+        })
+        // spinner.text = `Minted NFT ${i}/${amount}: ${item.path}: Tx: ${tx.transaction.id}`
+        console.log(`Minted NFT ${i}/${amount}: ${item.path}: Tx: ${tx.transaction.id}`)
+        tx_results.push({txStatus: tx.transaction.status_name, txId: tx.transaction.id, json: payload})
+    } 
+    spinner.stopAndPersist({text: 'Minting Completed, Outputting Result'})
+    console.log(tx_results)
 }
+
 async function deployFolder(response) {
     const marketOwner = await getAccount(response, response.account)
     const folderPath = path.resolve('.', response.folder)
