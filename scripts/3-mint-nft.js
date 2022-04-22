@@ -34,11 +34,26 @@ async function main() {
             message: 'Market Address',
             validate: value => isValidTonAddress(value) ? true : 'Invalid Everscale address'
         },
+        // {
+        //     type: 'text',
+        //     name: 'file',
+        //     message: 'Provide a file of NFT/*.png/*.jpeg to Deploy',
+        //     validate: p => path.extname(p)=== '.png' || path.extname(p) === '.jpg'
+        // },
         {
             type: 'text',
-            name: 'file',
-            message: 'Provide a file of NFT/*.png/*.jpeg to Deploy',
-            validate: p => path.extname(p)=== '.png' || path.extname(p) === '.jpg'
+            name: 'name',
+            message: 'Provide the nft name'
+        },
+        {
+            type: 'text',
+            name: 'description',
+            message: 'Provide the nft description'
+        },
+        {
+            type: 'text',
+            name: 'url',
+            message: 'Provide the image url'
         },
         {
             type: 'number',
@@ -59,43 +74,48 @@ async function main() {
 
 async function deployFile(response) {
     const marketOwner = await getAccount(response, response.account)
-    const filePath = path.resolve('.', response.file)
+    // const filePath = path.resolve('.', response.file)
     const market = await locklift.factory.getContract("Market")
     market.setAddress(response.marketAddr)
-    const amount = response.copyamount;
-
+    const amount = response.copyamount
+    const nft_url = response.url
+    const nft_name = response.name
+    const nft_description = response.description
     const spinner = ora('Deploying NFT').start();
 
-    let buff = await fs.readFile(filePath)
-    let file = {
-        path: path.basename(filePath),
-        content: buff
-        // mode: undefined,
-        // mtime: undefined
-    }
-    spinner.frame()
-    spinner.text = 'Storing to IPFS'
-    const ipfs = await IPFS.create();
+    // let buff = await fs.readFile(filePath)
+    // let file = {
+    //     path: path.basename(filePath),
+    //     content: buff
+    //     // mode: undefined,
+    //     // mtime: undefined
+    // }
+    // spinner.frame()
+    // spinner.text = 'Storing to IPFS'
+    // const ipfs = await IPFS.create();
 
-    let raw_res = await ipfs.add(file)
-    console.log(`Storing IPFS "${raw_res.path}" cid:${raw_res.cid.toString()}`);
+    // let raw_res = await ipfs.add(file)
+    // console.log(`Storing IPFS "${raw_res.path}" cid:${raw_res.cid.toString()}`);
 
-    raw_res.cid.toString();
+    // raw_res.cid.toString();
     
-    let item = {
-        description: '',
-        token_id: '',
-        image_url: '',
-        name: raw_res.path,
-        ipfs: raw_res.cid.toString()
-    }
+
 
     spinner.text = 'Minting Nfts to Market'
-    let payload = JSON.stringify(item)
+    
+    let start = await getTotalSupply(market)
 
     const tx_results = []
     for (let i = 0; i < amount; i++) {
-        spinner.text = `Minting NFT ${i}/${amount}: ${item.path}:`
+        spinner.text = `Minting NFT ${i+start}/${amount+start}: ${item.image_url}:`
+        let item = {
+            id: i + start,
+            name: nft_name,
+            description: nft_description,
+            image_url: nft_url,
+            // ipfs: raw_res.cid.toString()
+        }
+        let payload = JSON.stringify(item)
         let tx = await marketOwner.runTarget({
             contract: market,
             method: 'mintNft',
@@ -103,8 +123,8 @@ async function deployFile(response) {
             keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
         })
-        // spinner.text = `Minted NFT ${i}/${amount}: ${item.path}: Tx: ${tx.transaction.id}`
-        console.log(`Minted NFT ${i}/${amount}: ${item.path}: Tx: ${tx.transaction.id}`)
+        // spinner.text = `Minted NFT ${i}/${amount}: ${item.image_url}: Tx: ${tx.transaction.id}`
+        console.log(`Minted NFT ${i}/${amount}: ${item.image_url}: Tx: ${tx.transaction.id}`)
         tx_results.push({txStatus: tx.transaction.status_name, txId: tx.transaction.id, json: payload})
     } 
     spinner.stopAndPersist({text: 'Minting Completed, Outputting Result'})

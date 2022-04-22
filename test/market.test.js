@@ -14,7 +14,7 @@ describe('Test Market contract', async function () {
 /** @type {Account} */
   let marketAccount;
 
-  describe.only('Contracts', async function () {
+  describe('Contracts', async function () {
     it('Should Load contract factory', async function () {
       let Market = await locklift.factory.getContract("Market");
 
@@ -102,14 +102,14 @@ describe('Test Market contract', async function () {
           // Send Tokens Back to MarketAccount
           await marketAccount.runTarget({
             contract: market,
-            method: '_transfer',
+            method: 'transfer',
             params: {
               amount: 7,
-              recipient: marketAccount.address,
-              remainingGasTo: marketAccount.address,
-              notify: false,
-              deployWalletValue: 0,
-              payload: payload,
+              // recipient: marketAccount.address,
+              // remainingGasTo: marketAccount.address,
+              // notify: false,
+              // deployWalletValue: 0,
+              // payload: payload,
             },
             keyPair: marketAccount.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
@@ -234,7 +234,7 @@ describe('Test Market contract', async function () {
 
           expect(after.toNumber()).to.be.equal(before.toNumber())
         })
-        it.only('should sell nft if in order', async function () {
+        it('should sell nft if in order', async function () {
           this.timeout(20000)
           const nft = await locklift.factory.getContract("Nft");
 
@@ -281,14 +281,14 @@ describe('Test Market contract', async function () {
 
           let after = await getPurchaseCount(market)
 
-          let pnft = await getNftById(market, after)
+          // let pnft = await getNftById(market, after)
 
-          let resOwner = await pnft.call({
-            method: 'getInfo',
-            params: { answerId: 0}
-          })
+          // let resOwner = await pnft.call({
+          //   method: 'getInfo',
+          //   params: { answerId: 0}
+          // })
 
-          console.log(resOwner)
+          // console.log(resOwner)
 
           expect(after.toNumber()).to.be.greaterThan(before.toNumber())
         })

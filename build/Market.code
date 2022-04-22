@@ -675,16 +675,32 @@ AND
 PUSHCONT {
 	.loc ../contracts/Market.sol, 100
 	GETGLOB 23
-	INC
-	DUP
-	SETGLOB 23
-	.loc ../contracts/Market.sol, 101
 	CALLREF {
 		CALL $_nftAddress_internal_macro$
 	}
-	.loc ../contracts/Market.sol, 102
+	.loc ../contracts/Market.sol, 101
+	GETGLOB 23
+	INC
+	SETGLOB 23
+	.loc ../contracts/Market.sol, 106
+	PUSHINT 100000000
+	PUSHREF {
+	}
+	PAIR
+	PUSH S2
 	NEWDICT
-	.loc ../contracts/Market.sol, 103
+	ROT
+	CALLREF {
+		UNPAIR
+		SWAP
+		NEWC
+		STU 128
+		STREF
+	}
+	ROTREV
+	PUSHINT 267
+	DICTSETB
+	.loc ../contracts/Market.sol, 108
 	PUSH2 S4, S2
 	ROLL 3
 	TRUE
@@ -706,7 +722,7 @@ PUSHCONT {
 	STDICT
 }
 PUSHCONT {
-	.loc ../contracts/Market.sol, 110
+	.loc ../contracts/Market.sol, 115
 	OVER
 	TRUE
 	PUSH S4
@@ -743,7 +759,7 @@ SENDRAWMSG
 .loc ../contracts/Market.sol, 0
 BLKDROP 7
 
-.macro _transfer
+.macro transfer
 DROP
 GETGLOB 6
 THROWIFNOT 76
@@ -752,7 +768,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 122
+.loc ../contracts/Market.sol, 127
 OVER
 PUSHCONT {
 	LDREF
@@ -761,18 +777,10 @@ PUSHCONT {
 }
 IF
 LDU 128
-LDMSGADDR
-LDU 128
-LDREF
-ENDS
-CTOS
-LDMSGADDR
-LDI 1
-LDREF
 ENDS
 .loc ../contracts/Market.sol, 0
 CALLREF {
-	CALL $_transfer_internal_macro$
+	CALL $transfer_internal_macro$
 }
 DROP
 CALLREF {
@@ -780,7 +788,7 @@ CALLREF {
 }
 THROW 0
 
-.macro _transfer_internal_macro
+.macro transfer_internal_macro
 .loc ../contracts/modules/access/OwnableInternal.sol, 31
 GETGLOB 13
 GETGLOB 9
@@ -788,8 +796,19 @@ SDEQ
 THROWIFNOT 100
 .loc ../contracts/modules/access/OwnableInternal.sol, 32
 ACCEPT
-.loc ../contracts/Market.sol, 133
-REVERSE 6, 0
+.loc ../contracts/Market.sol, 138
+CALLREF {
+	CALL $owner_internal_macro$
+}
+.loc ../contracts/Market.sol, 139
+PUSHREF {
+}
+.loc ../contracts/Market.sol, 140
+FALSE
+PUSH S2
+PUSHINT 200000000
+BLKSWAP 2, 4
+SWAP
 GETGLOB 20
 TRUE
 NEWC
@@ -823,7 +842,7 @@ SENDRAWMSG
 CALL $_deserializeNftPurchase_internal_macro$
 
 .macro _deserializeNftPurchase_internal_macro
-.loc ../contracts/Market.sol, 137
+.loc ../contracts/Market.sol, 144
 CTOS
 LDMSGADDR
 ENDS
@@ -833,7 +852,7 @@ ENDS
 DROP
 GETGLOB 6
 THROWIFNOT 76
-.loc ../contracts/Market.sol, 140
+.loc ../contracts/Market.sol, 147
 OVER
 PUSHCONT {
 	LDREF
@@ -879,10 +898,10 @@ THROW 0
 CALL $_serializeNftPurchase_internal_macro$
 
 .macro _serializeNftPurchase_internal_macro
-.loc ../contracts/Market.sol, 142
+.loc ../contracts/Market.sol, 149
 NEWC
 STSLICE
-.loc ../contracts/Market.sol, 143
+.loc ../contracts/Market.sol, 150
 ENDC
 .loc ../contracts/Market.sol, 0
 
@@ -3440,16 +3459,16 @@ IFJMPREF {
 			CALL $resolveCodeHashNft$
 		}
 		DUP
+		PUSHINT 64029483
+		EQUAL
+		IFJMPREF {
+			CALL $transfer$
+		}
+		DUP
 		PUSHINT 64331365
 		EQUAL
 		IFJMPREF {
 			CALL $indexCode$
-		}
-		DUP
-		PUSHINT 87084887
-		EQUAL
-		IFJMPREF {
-			CALL $_transfer$
 		}
 		DUP
 		PUSHINT 194287172

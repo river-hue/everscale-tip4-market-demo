@@ -75,9 +75,9 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }(address(this), 0.1 ton);
     }
 
-    function setMinNftTokenPrice(uint256 minNftTokenPrice) public onlyOwner {
+    function setMinNftTokenPrice(uint256 amount) public onlyOwner {
         tvm.accept();
-        _minNftTokenPrice= minNftTokenPrice;
+        _minNftTokenPrice = amount;
     }
 
     function onAcceptTokensTransfer(
@@ -97,14 +97,13 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         // Check if Tickets are not Oversold
         // Check if Price is Correct
         if(_purchaseCount < _totalSupply && amount >= _minNftTokenPrice) {
-            _purchaseCount++;
             address nftAddr = _nftAddress(_purchaseCount);
+            _purchaseCount++;
 
             // Set Simple Callback for TIP4_1#changeOwner
             mapping(address => ITIP4_1NFT.CallbackParams) callbacks;
             TvmCell empty;
-            callbacks[newOwner] = ITIP4_1NFT.CallbackParams{value: 0.1 ton, payload: empty}
-
+            callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
 
             Nft(nftAddr).changeOwner{
                 value: 0 ton,
