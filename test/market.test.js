@@ -14,7 +14,7 @@ describe('Test Market contract', async function () {
 /** @type {Account} */
   let marketAccount;
 
-  describe('Contracts', async function () {
+  describe.only('Contracts', async function () {
     it('Should Load contract factory', async function () {
       let Market = await locklift.factory.getContract("Market");
 
@@ -234,7 +234,7 @@ describe('Test Market contract', async function () {
 
           expect(after.toNumber()).to.be.equal(before.toNumber())
         })
-        it('should sell nft if in order', async function () {
+        it.only('should sell nft if in order', async function () {
           this.timeout(20000)
           const nft = await locklift.factory.getContract("Nft");
 
@@ -260,14 +260,14 @@ describe('Test Market contract', async function () {
               recipient: nftOwner,
             }
           })
-
+          
           // Run Purchase
           // This calls onAcceptTokensTransfer back to Market
           await marketAccount.runTarget({
             contract: marketAccountWallet,
             method: 'transfer',
             params: {
-              amount: 11,
+              amount: 10,
               recipient: market.address,
               remainingGasTo: marketAccount.address,
               notify: true,
@@ -277,8 +277,18 @@ describe('Test Market contract', async function () {
             keyPair: user1,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
+          
 
           let after = await getPurchaseCount(market)
+
+          let pnft = await getNftById(market, after)
+
+          let resOwner = await pnft.call({
+            method: 'getInfo',
+            params: { answerId: 0}
+          })
+
+          console.log(resOwner)
 
           expect(after.toNumber()).to.be.greaterThan(before.toNumber())
         })

@@ -137,7 +137,7 @@ export async function deployMarket(account: Account, tokenRoot: Contract, config
     contract: Market,
     constructorParams: {
       tokenRoot: tokenRoot.address,
-      minNftTokenPrice: 10,
+      minNftTokenPrice,
       codeNft: Nft.code,
       codeIndex: Index.code,
       codeIndexBasis: IndexBasis.code,

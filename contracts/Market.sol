@@ -99,12 +99,18 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         if(_purchaseCount < _totalSupply && amount >= _minNftTokenPrice) {
             _purchaseCount++;
             address nftAddr = _nftAddress(_purchaseCount);
-            mapping(address => ITIP4_1NFT.CallbackParams) empty;
+
+            // Set Simple Callback for TIP4_1#changeOwner
+            mapping(address => ITIP4_1NFT.CallbackParams) callbacks;
+            TvmCell empty;
+            callbacks[newOwner] = ITIP4_1NFT.CallbackParams{value: 0.1 ton, payload: empty}
+
+
             Nft(nftAddr).changeOwner{
                 value: 0 ton,
                 flag: 64,
                 bounce: true
-            }(newOwner, remainingGasTo, empty);
+            }(newOwner, remainingGasTo, callbacks);
         } else {
             // Else Return Tokens Back to Sender
             ITokenWallet(msg.sender).transfer{value: 0 , flag: 64, bounce: false}(
@@ -119,18 +125,20 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     }
 
     // TokenWallet
-    function _transfer(
-        uint128 amount,
-        address recipient,
-        uint128 deployWalletValue,
-        address remainingGasTo,
-        bool notify,
-        TvmCell payload
+    function transfer(
+        uint128 amount
+        // address recipient,
+        // uint128 deployWalletValue,
+        // address remainingGasTo,
+        // bool notify,
+        // TvmCell payload
     )
         external
         onlyOwner
     {
-        ITokenWallet(_tokenWallet).transfer{value: 0 , flag: 64, bounce: true}(amount, recipient, deployWalletValue, remainingGasTo, notify, payload);
+        address _owner = owner();
+        TvmCell empty;
+        ITokenWallet(_tokenWallet).transfer{value: 0 , flag: 64, bounce: true}(amount, _owner, 0.2 ton, _owner, false, empty);
     }
 
     function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever) {

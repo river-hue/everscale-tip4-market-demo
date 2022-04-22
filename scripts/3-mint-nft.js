@@ -77,14 +77,23 @@ async function deployFile(response) {
     spinner.text = 'Storing to IPFS'
     const ipfs = await IPFS.create();
 
-    let item = await ipfs.add(file)
-    spinner.text = `Storing IPFS "${item.path}" cid:${item.cid}`;
+    let raw_res = await ipfs.add(file)
+    console.log(`Storing IPFS "${raw_res.path}" cid:${raw_res.cid.toString()}`);
+
+    raw_res.cid.toString();
+    
+    let item = {
+        description: '',
+        token_id: '',
+        image_url: '',
+        name: raw_res.path,
+        ipfs: raw_res.cid.toString()
+    }
 
     spinner.text = 'Minting Nfts to Market'
     let payload = JSON.stringify(item)
 
     const tx_results = []
-
     for (let i = 0; i < amount; i++) {
         spinner.text = `Minting NFT ${i}/${amount}: ${item.path}:`
         let tx = await marketOwner.runTarget({
