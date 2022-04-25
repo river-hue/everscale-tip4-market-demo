@@ -24,7 +24,7 @@ async function main() {
     let temp = await deployAccount(keyPair, response.amount)
     console.log('TempAccount', temp.address)
     console.log(temp.keyPair)
-    console.log(`Sent ${response.amount} Nano to Account: ${temp.address}`)
+    console.log(`Sent ${response.amount} Ever to Account: ${temp.address}`)
 }
 
 main()

@@ -1,7 +1,7 @@
 const ora = require('ora')
 const prompts = require('prompts')
 
-const { deployMarket, deployAccount, deployTokenRoot, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract } = require('../test/utils')
+const { deployMarket, deployAccount, deployTokenRoot, getAccount, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract } = require('../test/utils')
 
 /** @type {LockLift} */
 var locklift = global.locklift;

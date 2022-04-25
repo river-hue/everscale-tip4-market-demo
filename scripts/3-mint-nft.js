@@ -126,7 +126,7 @@ async function deployFile(response) {
             method: 'mintNft',
             params: { owner: market.address, json: payload },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(0.7, 'nano')
+            value: locklift.utils.convertCrystal(2, 'nano')
         })
         // spinner.text = `Minted NFT ${i}/${amount}: ${item.image_url}: Tx: ${tx.transaction.id}`
         console.log(`Minted NFT ${i}/${amount}: ${item.image_url}: Tx: ${tx.transaction.id}`)
@@ -136,59 +136,59 @@ async function deployFile(response) {
     console.log(tx_results)
 }
 
-async function deployFolder(response) {
-    const marketOwner = await getAccount(response, response.account)
-    const folderPath = path.resolve('.', response.folder)
-    const market = await locklift.factory.getContract("Market")
-    market.setAddress(response.marketAddr)
+// async function deployFolder(response) {
+//     const marketOwner = await getAccount(response, response.account)
+//     const folderPath = path.resolve('.', response.folder)
+//     const market = await locklift.factory.getContract("Market")
+//     market.setAddress(response.marketAddr)
 
-    const spinner = ora('Deploying NFT').start();
+//     const spinner = ora('Deploying NFT').start();
 
-    spinner.text = 'Reading Folder';
-    let folder = await fs.readdir(folderPath)
-    let filesPromise = folder
-        .filter(p => path.extname(p) === '.png' || path.extname(p) === '.jpg')
-        .map(async name => {
-            let imagePath = path.resolve(folderPath, name)
-            let buff = await fs.readFile(imagePath)
-            return {
-                path: path.basename(name),
-                content: buff,
-                // mode: undefined,
-                // mtime: undefined,
-            }
-        })
-    let files = await Promise.all(filesPromise);
+//     spinner.text = 'Reading Folder';
+//     let folder = await fs.readdir(folderPath)
+//     let filesPromise = folder
+//         .filter(p => path.extname(p) === '.png' || path.extname(p) === '.jpg')
+//         .map(async name => {
+//             let imagePath = path.resolve(folderPath, name)
+//             let buff = await fs.readFile(imagePath)
+//             return {
+//                 path: path.basename(name),
+//                 content: buff,
+//                 // mode: undefined,
+//                 // mtime: undefined,
+//             }
+//         })
+//     let files = await Promise.all(filesPromise);
 
-    spinner.frame()
+//     spinner.frame()
 
-    spinner.text = 'Storing to IPFS'
-    const ipfs = await IPFS.create();
+//     spinner.text = 'Storing to IPFS'
+//     const ipfs = await IPFS.create();
     
-    let results = []
-    for await (const item of ipfs.addAll(files)) {
-        spinner.text = `Storing IPFS ${results.length}/${files.length}: "${item.path}" cid:${item.cid}`;
-        results.push(item)
-    }
+//     let results = []
+//     for await (const item of ipfs.addAll(files)) {
+//         spinner.text = `Storing IPFS ${results.length}/${files.length}: "${item.path}" cid:${item.cid}`;
+//         results.push(item)
+//     }
 
-    spinner.text = 'Minting NFTS to Market'
-    const tx_results = []
-    for (const [i, result] of results.entries()) {
-        let payload = JSON.stringify(result)
-        spinner.text = `Minting NFT ${i}/${results.length}: ${result.path}:`
-        let tx = await marketOwner.runTarget({
-            contract: market,
-            method: 'mintNft',
-            params: { owner: market.address, json: payload },
-            keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(4, 'nano')
-        })
-        spinner.text = `Minted NFT ${i}/${results.length}: ${result.path}: Tx: ${tx.transaction.id}`
-        tx_results.push({txStatus: tx.transaction.status_name, txId: tx.transaction.id, json: payload})
-    }
-    spinner.stopAndPersist({text: 'Minting Completed, Outputting Result'})
-    console.log(tx_results)
-}
+//     spinner.text = 'Minting NFTS to Market'
+//     const tx_results = []
+//     for (const [i, result] of results.entries()) {
+//         let payload = JSON.stringify(result)
+//         spinner.text = `Minting NFT ${i}/${results.length}: ${result.path}:`
+//         let tx = await marketOwner.runTarget({
+//             contract: market,
+//             method: 'mintNft',
+//             params: { owner: market.address, json: payload },
+//             keyPair: marketOwner.keyPair,
+//             value: locklift.utils.convertCrystal(10, 'nano')
+//         })
+//         spinner.text = `Minted NFT ${i}/${results.length}: ${result.path}: Tx: ${tx.transaction.id}`
+//         tx_results.push({txStatus: tx.transaction.status_name, txId: tx.transaction.id, json: payload})
+//     }
+//     spinner.stopAndPersist({text: 'Minting Completed, Outputting Result'})
+//     console.log(tx_results)
+// }
 
 main()
     .then(() => process.exit(0))
