@@ -39,6 +39,10 @@ contract Market is Collection, IAcceptTokensTransferCallback {
        _setTokenRoot(tokenRoot);
     }
 
+    function tokenRoot() external view virtual responsible returns (address root) {
+        return {value: 0, flag: 64, bounce: true} (_tokenRoot);
+    }
+
     function minNftTokenPrice() external view virtual responsible returns (uint256 amount) {
         return {value: 0, flag: 64, bounce: true} (_minNftTokenPrice);
     }

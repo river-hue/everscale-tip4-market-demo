@@ -9,17 +9,22 @@ var locklift = global.locklift;
 async function main() {
   const [keyPair] = await locklift.keys.getKeyPairs();
 
-  console.log("Creating Token")
-
-  let tempAdmin = await deployAccount(keyPair, 100)
-
   const response = await prompts([
     {
       type: 'text',
-      name: 'owner',
-      message: 'Initial Token owner',
-      initial: tempAdmin.address,
+      name: 'account',
+      message: 'Get Token Owner Address',
       validate: value => isValidTonAddress(value) ? true : 'Invalid Everscale address'
+    },
+    {
+      type: 'text',
+      name: 'public',
+      message: 'Get Token Owner Pubkey',
+    },
+    {
+      type: 'text',
+      name: 'secret',
+      message: 'Get Token Owner PrivateKey',
     },
     {
       type: 'text',
@@ -48,33 +53,21 @@ async function main() {
     tokenDecimals: response.tokenDecimals.toString()
   }
 
+  const rootOwner = await getAccount(response, response.account)
+
   const spinner = ora('Deploying TokenRoot').start();
-  let tokenRoot = await deployTokenRoot(tempAdmin, {
+  let tokenRoot = await deployTokenRoot(rootOwner, {
     name: config.tokenName,
     symbol: config.tokenSymbol,
     decimals: config.tokenDecimals,
   })
 
-  spinner.text = 'Transfer Admin';
-
-  // Set Owner
-  await tempAdmin.runTarget({
-    contract: tokenRoot,
-    method: 'transferOwnership',
-    params: {
-      newOwner: config.owner,
-      remainingGasTo: config.owner,
-      callbacks: {},
-    },
-    keyPair: tempAdmin.keyPair,
-    value: locklift.utils.convertCrystal(1, 'nano')
-  })
   spinner.stop()
 
   await logContract(tokenRoot)
   console.log(`Admin: ${config.owner}`)
   console.log(`TempAdmin keyPair:`)
-  console.log(tempAdmin.keyPair)
+  console.log(rootOwner.keyPair)
 }
 
 main()

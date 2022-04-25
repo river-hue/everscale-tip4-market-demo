@@ -11,39 +11,20 @@ var locklift = global.locklift;
 
 async function main() {
     const [keyPair] = await locklift.keys.getKeyPairs();
-    const reciever = await locklift.factory.getAccount("Wallet");
     
     const response = await prompts([
         {
-            type: 'text',
-            name: 'address',
-            message: 'Account Address',
-            validate: value => isValidTonAddress(value) ? true : 'Invalid Everscale address'
-        },
-        {
             type: 'number',
             name: 'amount',
-            message: 'Amount of Ever to Send',
+            message: 'Amount of Ever for Admin',
             initial: 1
         }
     ])
 
-    reciever.setAddress(response.address)
     let temp = await deployAccount(keyPair, response.amount)
-    console.log('TempAccount', temp.address, temp.keyPair)
-    await temp.run({
-        method: 'sendTransaction',
-        params: {
-          dest: response.address,
-          value: 0,
-          bounce: false,
-          flags: 128,
-          payload: ''
-        },
-        keyPair: keyPair
-      });
-
-    console.log(`Sent ${response.amount} Nano to Account: ${response.address}`)
+    console.log('TempAccount', temp.address)
+    console.log(temp.keyPair)
+    console.log(`Sent ${response.amount} Nano to Account: ${temp.address}`)
 }
 
 main()

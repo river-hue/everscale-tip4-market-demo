@@ -17,6 +17,15 @@
 			]
 		},
 		{
+			"name": "tokenRoot",
+			"inputs": [
+				{"name":"answerId","type":"uint32"}
+			],
+			"outputs": [
+				{"name":"root","type":"address"}
+			]
+		},
+		{
 			"name": "minNftTokenPrice",
 			"inputs": [
 				{"name":"answerId","type":"uint32"}

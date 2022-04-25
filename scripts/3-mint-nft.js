@@ -105,9 +105,13 @@ async function deployFile(response) {
     
     let start = await getTotalSupply(market)
 
+    start = start.toNumber()
+    console.log(start)
+    let sample = 1+start;
+    console.log(`Start at:${sample}`)
+
     const tx_results = []
     for (let i = 0; i < amount; i++) {
-        spinner.text = `Minting NFT ${i+start}/${amount+start}: ${item.image_url}:`
         let item = {
             id: i + start,
             name: nft_name,
@@ -115,13 +119,14 @@ async function deployFile(response) {
             image_url: nft_url,
             // ipfs: raw_res.cid.toString()
         }
+        spinner.text = `Minting NFT ${i+start}/${amount+start}: ${item.image_url}:`
         let payload = JSON.stringify(item)
         let tx = await marketOwner.runTarget({
             contract: market,
             method: 'mintNft',
             params: { owner: market.address, json: payload },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(2, 'nano')
+            value: locklift.utils.convertCrystal(0.7, 'nano')
         })
         // spinner.text = `Minted NFT ${i}/${amount}: ${item.image_url}: Tx: ${tx.transaction.id}`
         console.log(`Minted NFT ${i}/${amount}: ${item.image_url}: Tx: ${tx.transaction.id}`)
@@ -176,7 +181,7 @@ async function deployFolder(response) {
             method: 'mintNft',
             params: { owner: market.address, json: payload },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(2, 'nano')
+            value: locklift.utils.convertCrystal(4, 'nano')
         })
         spinner.text = `Minted NFT ${i}/${results.length}: ${result.path}: Tx: ${tx.transaction.id}`
         tx_results.push({txStatus: tx.transaction.status_name, txId: tx.transaction.id, json: payload})
