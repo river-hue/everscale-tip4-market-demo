@@ -178,7 +178,7 @@ export async function deployTokenWallet(account: Account, tokenRoot: Contract): 
   return TokenWallet;
 }
 
-export function getTotalSupply(market: Contract) {
+export function getTotalSupply(market: Contract): Promise<BigNumber> {
   return market.call({
     method: 'totalSupply',
     params: {
@@ -187,7 +187,7 @@ export function getTotalSupply(market: Contract) {
   });
 }
 
-export function getPurchaseCount(market: Contract) {
+export function getPurchaseCount(market: Contract): Promise<BigNumber> {
   return market.call({
     method: 'purchaseCount',
     params: {

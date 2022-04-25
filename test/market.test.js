@@ -1,18 +1,18 @@
 const { expect } = require("chai");
-const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, LockLift, Account, Contract, getTokenWallet, logContract, getTotalSupply, getNftById, getPurchaseCount } = require("./utils");
+const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, LockLift, Account, Contract, getTokenWallet, logContract, getTotalSupply, getNftById, getPurchaseCount, getRandomNonce } = require("./utils");
 
 /** @type {LockLift} */
 var locklift = global.locklift;
 
 describe('Test Market contract', async function () {
-/** @type {Contract} */
+  /** @type {Contract} */
   let market;
-/** @type {Contract} */
+  /** @type {Contract} */
   let tokenRoot;
-/** @type {Contract} */
-  let marketAccountWallet;
-/** @type {Account} */
-  let marketAccount;
+  /** @type {Contract} */
+  let marketOwnerWallet;
+  /** @type {Account} */
+  let marketOwner;
 
   describe('Contracts', async function () {
     it('Should Load contract factory', async function () {
@@ -28,9 +28,9 @@ describe('Test Market contract', async function () {
       const keyPairs = await locklift.keys.getKeyPairs();
       const user1 = keyPairs[0];
 
-      marketAccount = await deployAccount(user1, 100)
-      tokenRoot = await deployTokenRoot(marketAccount, { name: 'Test Token', symbol: 'TST', decimals: '4' })
-      market = await deployMarket(marketAccount, tokenRoot)
+      marketOwner = await deployAccount(user1, 100)
+      tokenRoot = await deployTokenRoot(marketOwner, { name: 'Test Token', symbol: 'TST', decimals: '4' })
+      market = await deployMarket(marketOwner, tokenRoot)
 
       return expect(market.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
@@ -39,9 +39,9 @@ describe('Test Market contract', async function () {
     it('Should Deploy Wallet Contract', async function () {
       this.timeout(800000);
 
-      marketAccountWallet = await deployTokenWallet(marketAccount, tokenRoot);
+      marketOwnerWallet = await deployTokenWallet(marketOwner, tokenRoot);
 
-      expect(marketAccountWallet.address).to.be.a('string')
+      expect(marketOwnerWallet.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
     })
   })
@@ -54,7 +54,7 @@ describe('Test Market contract', async function () {
 
           let marketWallet = await getTokenWallet(market);
 
-          let start_acc = await marketAccountWallet.call({
+          let start_acc = await marketOwnerWallet.call({
             method: 'balance',
             params: { answerId: 0 }
           })
@@ -72,22 +72,22 @@ describe('Test Market contract', async function () {
 
           // Send Tokens from MarketAccount to MarketWallet
           // This calls onAcceptTokensTransfer back to Market
-          await marketAccount.runTarget({
-            contract: marketAccountWallet,
+          await marketOwner.runTarget({
+            contract: marketOwnerWallet,
             method: 'transfer',
             params: {
               amount: 8,
               recipient: market.address,
-              remainingGasTo: marketAccount.address,
+              remainingGasTo: marketOwner.address,
               notify: false,
               deployWalletValue: 0,
               payload: payload,
             },
-            keyPair: marketAccount.keyPair,
+            keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
 
-          let prev_acc = await marketAccountWallet.call({
+          let prev_acc = await marketOwnerWallet.call({
             method: 'balance',
             params: { answerId: 0 }
           })
@@ -100,7 +100,7 @@ describe('Test Market contract', async function () {
           expect(prev_market.toNumber()).to.equal(start_market.toNumber() + 8)
 
           // Send Tokens Back to MarketAccount
-          await marketAccount.runTarget({
+          await marketOwner.runTarget({
             contract: market,
             method: 'transfer',
             params: {
@@ -111,11 +111,11 @@ describe('Test Market contract', async function () {
               // deployWalletValue: 0,
               // payload: payload,
             },
-            keyPair: marketAccount.keyPair,
+            keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
 
-          let after_acc = await marketAccountWallet.call({
+          let after_acc = await marketOwnerWallet.call({
             method: 'balance',
             params: { answerId: 0 }
           })
@@ -136,7 +136,7 @@ describe('Test Market contract', async function () {
 
           const keyPairs = await locklift.keys.getKeyPairs();
 
-          let ex_json = "{name:'Jerry'}";
+          let ex_json = `{nonce: "${getRandomNonce()}"}`
           let before = await getTotalSupply(market)
           let nftId = before.toNumber();
 
@@ -144,11 +144,11 @@ describe('Test Market contract', async function () {
 
           const account2 = await deployAccount(keyPairs[1], 100)
 
-          const res = await marketAccount.runTarget({
+          const res = await marketOwner.runTarget({
             contract: market,
             method: 'mintNft',
-            params: { owner: account2.address, json: ex_json },
-            keyPair: marketAccount.keyPair,
+            params: { owner: market.address, json: ex_json },
+            keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
 
@@ -159,7 +159,12 @@ describe('Test Market contract', async function () {
             method: 'getJson',
             params: { answerId: 0 }
           })
+          const res_info = await nft.call({
+            method: 'getInfo',
+            params: { answerId: 0 }
+          })
           expect(res_json).to.equal(ex_json)
+          expect(res_info.owner).to.equal(market.address)
         })
 
         it('should reject if not owner', async function () {
@@ -177,7 +182,7 @@ describe('Test Market contract', async function () {
           const res = await account2.runTarget({
             contract: market,
             method: 'mintNft',
-            params: { owner: marketAccount.address, json: ex_json },
+            params: { owner: marketOwner.address, json: ex_json },
             keyPair: user2,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
@@ -191,19 +196,26 @@ describe('Test Market contract', async function () {
       describe('.onAcceptTokensTransfer', function () {
         it('should not sell nft if less than price', async function () {
           this.timeout(20000)
-          const nft = await locklift.factory.getContract("Nft");
 
           // Mint 2 NFT
-          await Promise.all(Array(1).map((_, index) => marketAccount.runTarget({
+          const res1 = await marketOwner.runTarget({
             contract: market,
             method: 'mintNft',
-            params: { owner: market.address, json: `{"index": "${index}"}` },
-            keyPair: marketAccount.keyPair,
+            params: { owner: market.address, json: '{"id": "1"}' },
+            keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
-          })))
+          })
+
+          const res2 = await marketOwner.runTarget({
+            contract: market,
+            method: 'mintNft',
+            params: { owner: market.address, json: '{"id": "2"}' },
+            keyPair: marketOwner.keyPair,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
 
           // Set NFT Owner
-          let nftOwner = marketAccount.address;
+          let nftOwner = marketOwner.address;
           let before = await getPurchaseCount(market)
 
           let payload = await market.call({
@@ -215,18 +227,18 @@ describe('Test Market contract', async function () {
 
           // Run Purchase
           // This calls onAcceptTokensTransfer back to Market
-          await marketAccount.runTarget({
-            contract: marketAccountWallet,
+          await marketOwner.runTarget({
+            contract: marketOwnerWallet,
             method: 'transfer',
             params: {
               amount: 9,
               recipient: market.address,
-              remainingGasTo: marketAccount.address,
+              remainingGasTo: marketOwner.address,
               notify: true,
               deployWalletValue: 0,
               payload,
             },
-            keyPair: marketAccount.keyPair,
+            keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
 
@@ -236,106 +248,106 @@ describe('Test Market contract', async function () {
         })
         it('should sell nft if in order', async function () {
           this.timeout(20000)
-          const nft = await locklift.factory.getContract("Nft");
 
-          const keyPairs = await locklift.keys.getKeyPairs();
-          const user1 = keyPairs[0];
-
-          // Mint 2 NFT
-          await Promise.all(Array(1).map((_, index) => marketAccount.runTarget({
-            contract: market,
-            method: 'mintNft',
-            params: { owner: market.address, json: `{"index": "${index}"}` },
-            keyPair: marketAccount.keyPair,
-            value: locklift.utils.convertCrystal(2, 'nano')
-          })))
+          const curr_p = (await getPurchaseCount(market)).toNumber();
+          const curr_t = (await getTotalSupply(market)).toNumber();
+          // Check if There Is Free NFT
+          if (curr_p == curr_t) {
+            // Mint NFT
+            const res1 = await marketOwner.runTarget({
+              contract: market,
+              method: 'mintNft',
+              params: { owner: market.address, json: `{"id":"${curr_p}"}` },
+              keyPair: marketOwner.keyPair,
+              value: locklift.utils.convertCrystal(2, 'nano')
+            })
+          }
+          let target_nft = await getNftById(market, curr_p);
+          let before_info = await target_nft.call({
+            method: 'getInfo',
+            params: { answerId: 0 }
+          })
+          expect(before_info.owner).to.equal(market.address)
 
           // Set NFT Owner
-          let nftOwner = marketAccount.address;
-          let before = await getPurchaseCount(market)
+          let newOwner = marketOwner.address;
 
           let payload = await market.call({
             method: '_serializeNftPurchase',
             params: {
-              recipient: nftOwner,
+              recipient: newOwner,
             }
           })
-          
+
           // Run Purchase
           // This calls onAcceptTokensTransfer back to Market
-          await marketAccount.runTarget({
-            contract: marketAccountWallet,
+          await marketOwner.runTarget({
+            contract: marketOwnerWallet,
             method: 'transfer',
             params: {
               amount: 10,
               recipient: market.address,
-              remainingGasTo: marketAccount.address,
+              remainingGasTo: marketOwner.address,
               notify: true,
               deployWalletValue: 0,
               payload,
             },
+            keyPair: marketOwner.keyPair,
+            value: locklift.utils.convertCrystal(1, 'nano')
+          })
+
+          let resInfo = await target_nft.call({
+            method: 'getInfo',
+            params: { answerId: 0 }
+          })
+
+          expect(resInfo.owner).to.equal(marketOwner.address)
+        })
+
+        it('should not sell nft if not in order', async function () {
+          this.timeout(80000)
+
+          const keyPairs = await locklift.keys.getKeyPairs();
+          const user1 = keyPairs[0];
+
+          // MINT NFT
+          let ex_json = "{name:'Jerry'}";
+          const res = await marketOwner.runTarget({
+            contract: market,
+            method: 'mintNft',
+            params: { owner: marketOwner.address, json: ex_json },
             keyPair: user1,
             value: locklift.utils.convertCrystal(2, 'nano')
           })
           
-
-          let after = await getPurchaseCount(market)
-
-          // let pnft = await getNftById(market, after)
-
-          // let resOwner = await pnft.call({
-          //   method: 'getInfo',
-          //   params: { answerId: 0}
-          // })
-
-          // console.log(resOwner)
-
-          expect(after.toNumber()).to.be.greaterThan(before.toNumber())
-        })
-
-        it('should not sell nft if not in order', async function () {
-          const keyPairs = await locklift.keys.getKeyPairs();
-          const user1 = keyPairs[0];
-
-          let ex_json = "{name:'Jerry'}";
           let curr_supply = await getTotalSupply(market)
-          let curr_count = await getPurchaseCount(market)
-
-          const res = await marketAccount.runTarget({
-            contract: market,
-            method: 'mintNft',
-            params: { owner: marketAccount.address, json: ex_json },
-            keyPair: user1,
-            value: locklift.utils.convertCrystal(2, 'nano')
-          })
-
+          
           // Set NFT Owner
-          let nftOwner = marketAccount.address;
-
-          let setPayload = (i) => market.call({
+          let payload = await market.call({
             method: '_serializeNftPurchase',
             params: {
-              recipient: nftOwner,
-              json: `{"index":"${i}"}`
+              recipient: marketOwner.address,
             }
           })
 
           // Run Purchase Higher Than Count
           // This calls onAcceptTokensTransfer back to Market
-          Promise.all(Array(curr_supply + 1).map(async (_, index) => marketAccount.runTarget({
-            contract: marketAccountWallet,
-            method: 'transfer',
-            params: {
-              amount: 11,
-              recipient: market.address,
-              remainingGasTo: marketAccount.address,
-              notify: true,
-              deployWalletValue: 0,
-              payload: await setPayload(index)
-            },
-            keyPair: user1,
-            value: locklift.utils.convertCrystal(2, 'nano')
-          })))
+          for (let index = 0; index < curr_supply + 1; index++) {
+            await marketOwner.runTarget({
+              contract: marketOwnerWallet,
+              method: 'transfer',
+              params: {
+                amount: 10,
+                recipient: market.address,
+                remainingGasTo: marketOwner.address,
+                notify: true,
+                deployWalletValue: 0,
+                payload
+              },
+              keyPair: marketOwner.keyPair,
+              value: locklift.utils.convertCrystal(2, 'nano')
+            })
+          }
 
           let curr_count_after = await getPurchaseCount(market)
 
