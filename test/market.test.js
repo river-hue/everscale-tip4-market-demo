@@ -30,7 +30,7 @@ describe('Test Market contract', async function () {
 
       marketOwner = await deployAccount(user1, 1000)
       tokenRoot = await deployTokenRoot(marketOwner, { name: 'Test Token', symbol: 'TST', decimals: '4' })
-      market = await deployMarket(marketOwner, tokenRoot)
+      market = await deployMarket(marketOwner, tokenRoot, { remainOnNft: 0.3, minNftTokenPrice: 10 })
 
       return expect(market.address).to.be.a('string')
         .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
@@ -67,7 +67,7 @@ describe('Test Market contract', async function () {
             method: 'mintNft',
             params: { owner: market.address, json: ex_json },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(50, 'nano')
+            value: locklift.utils.convertCrystal(4, 'nano')
           })
 
           await marketOwner.runTarget({
@@ -75,7 +75,7 @@ describe('Test Market contract', async function () {
             method: 'transferNft',
             params: { newOwner: account2.address, remainingGasTo: marketOwner.address },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(2, 'nano')
+            value: locklift.utils.convertCrystal(10, 'nano')
           })
 
           let resInfo = await nft.call({

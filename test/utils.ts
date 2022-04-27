@@ -141,10 +141,9 @@ export async function deployMarket(account: Account, tokenRoot: Contract, config
       codeIndex: Index.code,
       codeIndexBasis: IndexBasis.code,
       ownerPubkey: account.address,
+      remainOnNft: locklift.utils.convertCrystal(remainOnNft, 'nano'),
     },
-    initParams: {
-      _remainOnNft: 0
-    },
+    initParams: {},
     keyPair: account.keyPair,
   }, locklift.utils.convertCrystal(1, 'nano'));
 }

@@ -11,7 +11,8 @@
 				{"name":"codeNft","type":"cell"},
 				{"name":"codeIndex","type":"cell"},
 				{"name":"codeIndexBasis","type":"cell"},
-				{"name":"ownerPubkey","type":"address"}
+				{"name":"ownerPubkey","type":"address"},
+				{"name":"remainOnNft","type":"uint128"}
 			],
 			"outputs": [
 			]

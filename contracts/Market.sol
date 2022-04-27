@@ -27,12 +27,14 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         TvmCell codeNft,
         TvmCell codeIndex,
         TvmCell codeIndexBasis,
-        address ownerPubkey
+        address ownerPubkey,
+        uint128 remainOnNft
     ) Collection(
         codeNft, 
         codeIndex,
         codeIndexBasis,
-        ownerPubkey
+        ownerPubkey,
+        remainOnNft
     ) public {
        tvm.accept();
        _minNftTokenPrice = minNftTokenPrice;
@@ -110,7 +112,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
 
             Nft(nftAddr).changeOwner{
-                value: 0 ton,
+                value: 3 ton,
                 flag: 64,
                 bounce: true
             }(newOwner, remainingGasTo, callbacks);
@@ -156,7 +158,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
 
             Nft(nftAddr).changeOwner{
-                value: 0 ton,
+                value: 3 ton,
                 flag: 64,
                 bounce: true
             }(newOwner, remainingGasTo, callbacks);

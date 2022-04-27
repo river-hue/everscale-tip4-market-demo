@@ -10,19 +10,21 @@ import "./Nft.sol";
 contract Collection is TIP4_3Collection {
 	/// _remainOnNft - the number of crystals that will remain after the entire mint
 	/// process is completed on the Nft contract
-	uint128 _remainOnNft = 0.3 ton;
+	uint128 _remainOnNft;
 
 	constructor(
 		TvmCell codeNft,
 		TvmCell codeIndex,
 		TvmCell codeIndexBasis,
-		address ownerPubkey
+		address ownerPubkey,
+		uint128 remainOnNft
 	)
 		public
 		TIP4_1Collection(codeNft)
 		TIP4_3Collection(codeIndex, codeIndexBasis, ownerPubkey)
 	{
 		tvm.accept();
+		_remainOnNft = remainOnNft;
 	}
 
 	function _mintNft(address owner, string json) internal virtual {
