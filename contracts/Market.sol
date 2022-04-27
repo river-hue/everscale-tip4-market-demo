@@ -61,6 +61,12 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         _mintNft(owner, json);
     }
 
+    function batchMintNft(address owner, string json, uint256 amount) public virtual onlyOwner {
+        for (uint256 i = 0; i < amount; i++) {
+            _mintNft(owner, json);
+        }
+    }
+
     function setTokenWallet(address newTokenWallet) public {
         require(msg.sender == _tokenRoot, TokenErrors.WRONG_ROOT_OWNER);
         tvm.accept();
@@ -112,7 +118,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
 
             Nft(nftAddr).changeOwner{
-                value: 3 ton,
+                value: 0 ton,
                 flag: 64,
                 bounce: true
             }(newOwner, remainingGasTo, callbacks);
@@ -158,10 +164,30 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
 
             Nft(nftAddr).changeOwner{
-                value: 3 ton,
+                value: 0 ton,
                 flag: 64,
                 bounce: true
             }(newOwner, remainingGasTo, callbacks);
+        }
+    }
+
+    function batchTransferNft(address newOwner, address remainingGasTo, uint256 amount) external onlyOwner {
+        if (amount > 0 && _purchaseCount + amount - 1 < _totalSupply) {
+            // Set Simple Callback for TIP4_1#changeOwner
+            mapping(address => ITIP4_1NFT.CallbackParams) callbacks;
+            TvmCell empty;
+            callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
+
+            for (uint256 i = 0; i < amount; i++) {
+                address nftAddr = _nftAddress(_purchaseCount+i);
+                
+                Nft(nftAddr).changeOwner{
+                    value: 0 ton,
+                    flag: 64,
+                    bounce: true
+                }(newOwner, remainingGasTo, callbacks);
+            }
+            _purchaseCount += amount;
         }
     }
 

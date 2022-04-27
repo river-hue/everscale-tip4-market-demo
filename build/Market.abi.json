@@ -63,6 +63,16 @@
 			]
 		},
 		{
+			"name": "batchMintNft",
+			"inputs": [
+				{"name":"owner","type":"address"},
+				{"name":"json","type":"string"},
+				{"name":"amount","type":"uint256"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "setTokenWallet",
 			"inputs": [
 				{"name":"newTokenWallet","type":"address"}
@@ -120,6 +130,16 @@
 			"inputs": [
 				{"name":"newOwner","type":"address"},
 				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "batchTransferNft",
+			"inputs": [
+				{"name":"newOwner","type":"address"},
+				{"name":"remainingGasTo","type":"address"},
+				{"name":"amount","type":"uint256"}
 			],
 			"outputs": [
 			]
