@@ -107,6 +107,23 @@
 			]
 		},
 		{
+			"name": "transferEver",
+			"inputs": [
+				{"name":"value","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "transferNft",
+			"inputs": [
+				{"name":"newOwner","type":"address"},
+				{"name":"remainingGasTo","type":"address"}
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "_serializeNftPurchase",
 			"inputs": [
 				{"name":"recipient","type":"address"}

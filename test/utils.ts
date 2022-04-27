@@ -94,7 +94,6 @@ export async function deployTokenRoot(account: Account, config: { name: string, 
   // deployWalletValue = deployWalletValue || locklift.utils.convertCrystal('1', 'nano')
   deployWalletValue = locklift.utils.convertCrystal('0.1', 'nano')
 
-  console.log(deployWalletValue)
   const TokenRoot = await locklift.factory.getContract("TokenRoot");
   const TokenWallet = await locklift.factory.getContract("TokenWallet");
 

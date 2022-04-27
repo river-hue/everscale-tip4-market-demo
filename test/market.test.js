@@ -28,7 +28,7 @@ describe('Test Market contract', async function () {
       const keyPairs = await locklift.keys.getKeyPairs();
       const user1 = keyPairs[0];
 
-      marketOwner = await deployAccount(user1, 100)
+      marketOwner = await deployAccount(user1, 1000)
       tokenRoot = await deployTokenRoot(marketOwner, { name: 'Test Token', symbol: 'TST', decimals: '4' })
       market = await deployMarket(marketOwner, tokenRoot)
 
@@ -46,10 +46,91 @@ describe('Test Market contract', async function () {
     })
   })
 
-  describe('Market', async function () {
+  describe('Market', function () {
     describe('Owner', function () {
-      describe('.transfer()', async function () {
-        it('should transfer from MarketAccount', async function () {
+      describe('transferNft()', function() {
+        it('should transferOwnership nft to reciever iff owner', async function() {
+          this.timeout(20000);
+          
+          const keyPairs = await locklift.keys.getKeyPairs();
+
+          let ex_json = `{nonce: "${getRandomNonce()}"}`
+          let before = await getPurchaseCount(market)
+          let nftId = before.toNumber();
+
+          let nft = await getNftById(market, nftId)
+
+          const account2 = await deployAccount(keyPairs[1], 100)
+
+          await marketOwner.runTarget({
+            contract: market,
+            method: 'mintNft',
+            params: { owner: market.address, json: ex_json },
+            keyPair: marketOwner.keyPair,
+            value: locklift.utils.convertCrystal(50, 'nano')
+          })
+
+          await marketOwner.runTarget({
+            contract: market,
+            method: 'transferNft',
+            params: { newOwner: account2.address, remainingGasTo: marketOwner.address },
+            keyPair: marketOwner.keyPair,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
+
+          let resInfo = await nft.call({
+            method: 'getInfo',
+            params: { answerId: 0 }
+          })
+
+          let after = await getPurchaseCount(market)
+
+          expect(after.toNumber()).to.be.greaterThan(before.toNumber())
+          expect(resInfo.owner).to.equal(account2.address)
+        })
+        it('should reject if not owner', async function() {
+          this.timeout(20000);
+
+          const keyPairs = await locklift.keys.getKeyPairs();
+
+          let ex_json = `{nonce: "${getRandomNonce()}"}`
+          let before = await getPurchaseCount(market)
+          let nftId = before.toNumber();
+
+          let nft = await getNftById(market, nftId)
+
+          const account2 = await deployAccount(keyPairs[1], 100)
+
+          const res = await marketOwner.runTarget({
+            contract: market,
+            method: 'mintNft',
+            params: { owner: market.address, json: ex_json },
+            keyPair: marketOwner.keyPair,
+            value: locklift.utils.convertCrystal(2, 'nano')
+          })
+
+          await account2.runTarget({
+            contract: market,
+            method: 'transferNft',
+            params: { newOwner: account2.address, remainingGasTo: marketOwner.address },
+            keyPair: account2.keyPair,
+            value: locklift.utils.convertCrystal(10, 'nano')
+          })
+
+          let resInfo = await nft.call({
+            method: 'getInfo',
+            params: { answerId: 0 }
+          })
+
+          expect(resInfo.owner).to.not.equal(account2.address)
+        })
+      })
+      describe('transferEver()', function() {
+        it('should transfer Ever to owner iff owner')
+        it('should reject if not owner')
+      })
+      describe('.transfer()', function () {
+        it('should transfer tokens from MarketAccount', async function () {
           this.timeout(20000);
 
           let marketWallet = await getTokenWallet(market);

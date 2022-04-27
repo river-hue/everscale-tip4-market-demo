@@ -127,21 +127,40 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         }
     }
 
-    // TokenWallet
-    function transfer(
-        uint128 amount
-        // address recipient,
-        // uint128 deployWalletValue,
-        // address remainingGasTo,
-        // bool notify,
-        // TvmCell payload
-    )
-        external
-        onlyOwner
-    {
+    // Transfers Tokens to Owner
+    function transfer(uint128 amount) external onlyOwner {
         address _owner = owner();
         TvmCell empty;
         ITokenWallet(_tokenWallet).transfer{value: 0 , flag: 64, bounce: true}(amount, _owner, 0.2 ton, _owner, false, empty);
+    }
+
+    // Transfer Ever to Owner
+    function transferEver(uint128 value) external onlyOwner {
+        address _owner = owner();
+        TvmCell empty;
+        ExtraCurrencyCollection c;
+        _owner.transfer({value: value, bounce: true, flag: 64, body: empty, currencies: c});
+    }
+
+    // Transfer NFT to Reciever
+    function transferNft(address newOwner, address remainingGasTo) external onlyOwner {
+
+        // Check if Tickets are not Oversold
+        if (_purchaseCount < _totalSupply) {
+            address nftAddr = _nftAddress(_purchaseCount);
+            _purchaseCount++;
+
+            // Set Simple Callback for TIP4_1#changeOwner
+            mapping(address => ITIP4_1NFT.CallbackParams) callbacks;
+            TvmCell empty;
+            callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
+
+            Nft(nftAddr).changeOwner{
+                value: 0 ton,
+                flag: 64,
+                bounce: true
+            }(newOwner, remainingGasTo, callbacks);
+        }
     }
 
     function _deserializeNftPurchase(TvmCell payload) internal returns (address reciever) {
