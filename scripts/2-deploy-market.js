@@ -76,7 +76,7 @@ async function main() {
   const tempAdmin = await deployAccount(keyPair, Math.floor(amount * 3.4));
 
   const spinner = ora('Deploying Market').start();
-  let market = await deployMarket(tempAdmin, tokenRoot, { minNftTokenPrice: config.nftPrice, remainOnNft: 0 })
+  let market = await deployMarket(tempAdmin, tokenRoot, { minNftTokenPrice: config.nftPrice, remainOnNft: 0.3 })
   await logContract(market)
 
   spinner.text = 'Deploying Nfts'
