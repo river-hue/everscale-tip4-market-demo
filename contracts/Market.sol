@@ -57,12 +57,24 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         return {value: 0, flag: 64, bounce: true} (_tokenWallet);
     }
 
-    function mintNft(address owner, string json) public virtual onlyOwner {
-        _mintNft(owner, json, 1);
+    function mintNft(string json) public virtual onlyOwner {
+        require(
+			msg.value > _remainOnNft + 0.1 ton,
+			CollectionErrors.value_is_less_than_required
+		);
+		tvm.rawReserve(msg.value, 1);
+        _mintNft(this, json, 0, 128);
     }
 
-    function batchMintNft(address owner, string json, uint256 amount) public virtual onlyOwner {
-        _mintNft(owner, json, amount);
+    function batchMintNft(string[] jsons) public virtual onlyOwner {
+        require(
+			msg.value > _remainOnNft + (3 ton * jsons.length),
+			CollectionErrors.value_is_less_than_required
+		);
+
+        for ((string json) : jsons) {
+            _mintNft(this, json, 3 ton, 0);
+        }
     }
 
     function setTokenWallet(address newTokenWallet) public {
@@ -71,13 +83,13 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         _tokenWallet = newTokenWallet;
     }
 
-    function setTokenRoot(address tokenRoot) public onlyOwner {
-        _setTokenRoot(tokenRoot);
+    function setTokenRoot(address newTokenRoot) public onlyOwner {
+        _setTokenRoot(newTokenRoot);
     }
 
-    function _setTokenRoot(address tokenRoot) internal {
-        _tokenRoot = tokenRoot;
-       TokenRoot(tokenRoot).deployWallet{
+    function _setTokenRoot(address newTokenRoot) internal {
+        _tokenRoot = newTokenRoot;
+       TokenRoot(_tokenRoot).deployWallet{
            value: 0.5 ton,
            flag: 1,
            callback: setTokenWallet,
@@ -145,7 +157,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         address _owner = owner();
         TvmCell empty;
         ExtraCurrencyCollection c;
-        _owner.transfer({value: value, bounce: false, flag: 64, body: empty, currencies: c});
+        _owner.transfer({value: value, bounce: false, flag: 0, body: empty, currencies: c});
     }
 
     // Transfer NFT to Reciever

@@ -27,31 +27,49 @@ contract Collection is TIP4_3Collection {
 		_remainOnNft = remainOnNft;
 	}
 
-	function _mintNft(address owner, string json, uint256 amount) internal virtual {
-		require(
-			msg.value > _remainOnNft + ((0.1 ton)*amount),
-			CollectionErrors.value_is_less_than_required
+	// function _mintNft(address owner, string json) internal virtual {
+	// 	require(
+	// 		msg.value > _remainOnNft + 0.1 ton,
+	// 		CollectionErrors.value_is_less_than_required
+	// 	);
+	// 	tvm.rawReserve(msg.value, 1);
+
+	// 	uint256 id = uint256(_totalSupply);
+	// 	_totalSupply++;
+
+	// 	TvmCell codeNft = _buildNftCode(address(this));
+	// 	TvmCell stateNft = _buildNftState(codeNft, id);
+	// 	address nftAddr = new Nft{stateInit: stateNft, value: 0, flag: 128}(
+	// 		owner,
+	// 		msg.sender,
+	// 		_remainOnNft,
+	// 		json,
+	// 		_indexDeployValue,
+	// 		_indexDestroyValue,
+	// 		_codeIndex
+	// 	);
+
+	// 	emit NftCreated(id, nftAddr, owner, msg.sender, msg.sender);
+	// }
+
+	function _mintNft(address owner, string json, uint128 value, uint16 flag) internal virtual {
+		
+		uint256 id = uint256(_totalSupply);
+		_totalSupply++;
+
+		TvmCell codeNft = _buildNftCode(address(this));
+		TvmCell stateNft = _buildNftState(codeNft, id);
+		address nftAddr = new Nft{stateInit: stateNft, value: value, flag: flag}(
+			owner,
+			msg.sender,
+			_remainOnNft,
+			json,
+			_indexDeployValue,
+			_indexDestroyValue,
+			_codeIndex
 		);
-		tvm.rawReserve(msg.value, 1);
 
-		for (uint256 i = 0; i < amount; i++) {
-			uint256 id = uint256(_totalSupply);
-			_totalSupply++;
-
-			TvmCell codeNft = _buildNftCode(address(this));
-			TvmCell stateNft = _buildNftState(codeNft, id);
-			address nftAddr = new Nft{stateInit: stateNft, value: 0, flag: 128}(
-				owner,
-				msg.sender,
-				_remainOnNft,
-				json,
-				_indexDeployValue,
-				_indexDestroyValue,
-				_codeIndex
-			);
-
-			emit NftCreated(id, nftAddr, owner, msg.sender, msg.sender);
-		}
+		emit NftCreated(id, nftAddr, owner, msg.sender, msg.sender);
 	}
 
 	function setRemainOnNft(uint128 remainOnNft) external virtual onlyOwner {
