@@ -117,8 +117,9 @@ ADDCONST -2
 PICK
 GETGLOB 19
 PUSHINT 100000000
+PUSH S3
+MUL
 ADD
-UFITS 128
 GREATER
 THROWIFNOT 102
 .loc ../contracts/Collection.sol, 35
@@ -128,116 +129,129 @@ PICK
 PUSHINT 1
 RAWRESERVE
 .loc ../contracts/Collection.sol, 37
-GETGLOB 12
-DUP
-.loc ../contracts/Collection.sol, 38
-INC
-UFITS 128
-SETGLOB 12
-.loc ../contracts/Collection.sol, 40
-MYADDR
-CALLREF {
-	CALL $_buildNftCode_internal_macro$
-}
-.loc ../contracts/Collection.sol, 41
-OVER
-CALLREF {
-	CALL $_buildNftState_internal_macro$
-}
-.loc ../contracts/Collection.sol, 42
-GETGLOB 14
-GETGLOB 17
-GETGLOB 16
-ROLL 5
-GETGLOB 19
-GETGLOB 9
-PUSH S8
-ROLL 7
-DUP
-HASHCU
-NEWC
-STSLICECONST x801_
-STU 256
-ENDC
-CTOS
-ROLLREV 8
-PUSH S8
-NEWC
-STSLICECONST x62_
-STSLICE
-PUSHSLICE x0000000000000000000000000007_
-STSLICER
-OVER
-CALLREF {
-	CTOS
-	LDI 1
-	SWAP
-	PUSHCONT {
-		LDI 5
-		NIP
-	}
-	IF
-	LDI 1
-	SWAP
-	PUSHCONT {
-		LDI 2
-		NIP
-	}
-	IF
-	LDOPTREF
-	LDOPTREF
-	LDDICT
-	ENDS
-	BLKDROP 3
-}
-STREF
-STSLICECONST 1
-ROLLREV 7
-NEWC
-STSLICECONST x0863f2f6
-STSLICE
-ROLLREV 6
-NEWC
-STSLICE
-STU 128
-STREF
-STU 128
-STU 128
-STREF
-STBREFR
-STBREFR
-ENDC
-PUSHINT 128
-SENDRAWMSG
-.loc ../contracts/Collection.sol, 52
-GETGLOB 9
-DUP
-BLKSWAP 3, 2
-SWAP
-PUSHSLICE xc0000000000000000000000001
-NEWC
-STSLICE
-ROLLREV 5
-NEWC
-STSLICECONST x010e5db7
-STU 256
-STSLICE
-ROLLREV 3
-NEWC
-STSLICE
-ROTREV
-NEWC
-STSLICE
-SWAP
-NEWC
-STSLICE
-STBREFR
-STBREFR
-STBREFR
-STBREFR
-ENDC
 PUSHINT 0
-SENDRAWMSG
+PUSHCONT {
+	PUSH2 S0, S1
+	LESS
+}
+PUSHCONT {
+	.loc ../contracts/Collection.sol, 38
+	GETGLOB 12
+	DUP
+	.loc ../contracts/Collection.sol, 39
+	INC
+	UFITS 128
+	SETGLOB 12
+	.loc ../contracts/Collection.sol, 41
+	MYADDR
+	CALLREF {
+		CALL $_buildNftCode_internal_macro$
+	}
+	.loc ../contracts/Collection.sol, 42
+	OVER
+	CALLREF {
+		CALL $_buildNftState_internal_macro$
+	}
+	.loc ../contracts/Collection.sol, 43
+	GETGLOB 14
+	GETGLOB 17
+	GETGLOB 16
+	PUSH S7
+	GETGLOB 19
+	GETGLOB 9
+	PUSH S11
+	ROLL 7
+	DUP
+	HASHCU
+	NEWC
+	STSLICECONST x801_
+	STU 256
+	ENDC
+	CTOS
+	ROLLREV 8
+	PUSH S8
+	NEWC
+	STSLICECONST x62_
+	STSLICE
+	PUSHSLICE x0000000000000000000000000007_
+	STSLICER
+	OVER
+	CALLREF {
+		CTOS
+		LDI 1
+		SWAP
+		PUSHCONT {
+			LDI 5
+			NIP
+		}
+		IF
+		LDI 1
+		SWAP
+		PUSHCONT {
+			LDI 2
+			NIP
+		}
+		IF
+		LDOPTREF
+		LDOPTREF
+		LDDICT
+		ENDS
+		BLKDROP 3
+	}
+	STREF
+	STSLICECONST 1
+	ROLLREV 7
+	NEWC
+	STSLICECONST x0863f2f6
+	STSLICE
+	ROLLREV 6
+	NEWC
+	STSLICE
+	STU 128
+	STREF
+	STU 128
+	STU 128
+	STREF
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 128
+	SENDRAWMSG
+	.loc ../contracts/Collection.sol, 53
+	GETGLOB 9
+	PUSH2 S0, S6
+	BLKSWAP 2, 3
+	SWAP
+	PUSHSLICE xc0000000000000000000000001
+	NEWC
+	STSLICE
+	ROLLREV 5
+	NEWC
+	STSLICECONST x010e5db7
+	STU 256
+	STSLICE
+	ROLLREV 3
+	NEWC
+	STSLICE
+	ROTREV
+	NEWC
+	STSLICE
+	SWAP
+	NEWC
+	STSLICE
+	STBREFR
+	STBREFR
+	STBREFR
+	STBREFR
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+	.loc ../contracts/Collection.sol, 37
+	INC
+	.loc ../contracts/Collection.sol, 0
+}
+WHILE
+BLKDROP 4
 .loc ../contracts/Collection.sol, 0
 
 .macro setRemainOnNft
@@ -249,7 +263,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Collection.sol, 55
+.loc ../contracts/Collection.sol, 57
 OVER
 PUSHCONT {
 	LDREF
@@ -277,7 +291,7 @@ SDEQ
 THROWIFNOT 100
 .loc ../contracts/modules/access/OwnableInternal.sol, 32
 ACCEPT
-.loc ../contracts/Collection.sol, 56
+.loc ../contracts/Collection.sol, 58
 SETGLOB 19
 .loc ../contracts/Collection.sol, 0
 
@@ -286,7 +300,7 @@ SETGLOB 19
 CALL $_nftAddress_internal_macro$
 
 .macro _nftAddress_internal_macro
-.loc ../contracts/Collection.sol, 60
+.loc ../contracts/Collection.sol, 62
 MYADDR
 SWAP
 CALLREF {
@@ -299,7 +313,7 @@ CALLREF {
 CALL $_buildNftState_internal_macro$
 
 .macro _buildNftState_internal_macro
-.loc ../contracts/Collection.sol, 70
+.loc ../contracts/Collection.sol, 72
 PUSHINT 0
 NEWC
 STU 256
@@ -335,7 +349,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Collection.sol, 73
+.loc ../contracts/Collection.sol, 75
 OVER
 PUSHCONT {
 	LDREF
@@ -385,11 +399,11 @@ THROW 0
 CALL $resolveIndexCodeHash_internal_macro$
 
 .macro resolveIndexCodeHash_internal_macro
-.loc ../contracts/Collection.sol, 74
+.loc ../contracts/Collection.sol, 76
 CALLREF {
 	CALL $_buildIndexCode_internal_macro$
 }
-.loc ../contracts/Collection.sol, 75
+.loc ../contracts/Collection.sol, 77
 HASHCU
 .loc ../contracts/Collection.sol, 0
 

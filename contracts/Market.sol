@@ -58,13 +58,11 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     }
 
     function mintNft(address owner, string json) public virtual onlyOwner {
-        _mintNft(owner, json);
+        _mintNft(owner, json, 1);
     }
 
     function batchMintNft(address owner, string json, uint256 amount) public virtual onlyOwner {
-        for (uint256 i = 0; i < amount; i++) {
-            _mintNft(owner, json);
-        }
+        _mintNft(owner, json, amount);
     }
 
     function setTokenWallet(address newTokenWallet) public {
@@ -147,7 +145,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         address _owner = owner();
         TvmCell empty;
         ExtraCurrencyCollection c;
-        _owner.transfer({value: value, bounce: true, flag: 64, body: empty, currencies: c});
+        _owner.transfer({value: value, bounce: false, flag: 64, body: empty, currencies: c});
     }
 
     // Transfer NFT to Reciever
