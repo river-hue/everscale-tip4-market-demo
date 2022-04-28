@@ -29,7 +29,6 @@ abstract contract OwnableInternal {
     /// @dev придумать, как хранить ошибки в extensions
     modifier onlyOwner() virtual {
         require(_owner == msg.sender, 100);
-        tvm.accept();
         _;
     }
 

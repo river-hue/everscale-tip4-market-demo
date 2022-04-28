@@ -111,24 +111,24 @@ THROW 0
 CALL $_mintNft_internal_macro$
 
 .macro _mintNft_internal_macro
-.loc ../contracts/Collection.sol, 57
+.loc ../contracts/Collection.sol, 32
 GETGLOB 12
 DUP
-.loc ../contracts/Collection.sol, 58
+.loc ../contracts/Collection.sol, 33
 INC
 UFITS 128
 SETGLOB 12
-.loc ../contracts/Collection.sol, 60
+.loc ../contracts/Collection.sol, 35
 MYADDR
 CALLREF {
 	CALL $_buildNftCode_internal_macro$
 }
-.loc ../contracts/Collection.sol, 61
+.loc ../contracts/Collection.sol, 36
 OVER
 CALLREF {
 	CALL $_buildNftState_internal_macro$
 }
-.loc ../contracts/Collection.sol, 62
+.loc ../contracts/Collection.sol, 37
 GETGLOB 14
 GETGLOB 17
 GETGLOB 16
@@ -196,7 +196,7 @@ STBREFR
 ENDC
 ROLL 3
 SENDRAWMSG
-.loc ../contracts/Collection.sol, 72
+.loc ../contracts/Collection.sol, 47
 GETGLOB 9
 DUP
 BLKSWAP 3, 2
@@ -236,7 +236,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Collection.sol, 75
+.loc ../contracts/Collection.sol, 50
 OVER
 PUSHCONT {
 	LDREF
@@ -262,9 +262,7 @@ GETGLOB 13
 GETGLOB 9
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/modules/access/OwnableInternal.sol, 32
-ACCEPT
-.loc ../contracts/Collection.sol, 76
+.loc ../contracts/Collection.sol, 51
 SETGLOB 19
 .loc ../contracts/Collection.sol, 0
 
@@ -273,7 +271,7 @@ SETGLOB 19
 CALL $_nftAddress_internal_macro$
 
 .macro _nftAddress_internal_macro
-.loc ../contracts/Collection.sol, 80
+.loc ../contracts/Collection.sol, 55
 MYADDR
 SWAP
 CALLREF {
@@ -286,7 +284,7 @@ CALLREF {
 CALL $_buildNftState_internal_macro$
 
 .macro _buildNftState_internal_macro
-.loc ../contracts/Collection.sol, 90
+.loc ../contracts/Collection.sol, 65
 PUSHINT 0
 NEWC
 STU 256
@@ -322,7 +320,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Collection.sol, 93
+.loc ../contracts/Collection.sol, 68
 OVER
 PUSHCONT {
 	LDREF
@@ -372,11 +370,11 @@ THROW 0
 CALL $resolveIndexCodeHash_internal_macro$
 
 .macro resolveIndexCodeHash_internal_macro
-.loc ../contracts/Collection.sol, 94
+.loc ../contracts/Collection.sol, 69
 CALLREF {
 	CALL $_buildIndexCode_internal_macro$
 }
-.loc ../contracts/Collection.sol, 95
+.loc ../contracts/Collection.sol, 70
 HASHCU
 .loc ../contracts/Collection.sol, 0
 
@@ -466,8 +464,6 @@ GETGLOB 13
 GETGLOB 9
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/modules/access/OwnableInternal.sol, 32
-ACCEPT
 .loc ../contracts/modules/TIP4_3/TIP4_3Collection.sol, 52
 GETGLOB 15
 HASHCU
@@ -574,8 +570,6 @@ GETGLOB 13
 GETGLOB 9
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/modules/access/OwnableInternal.sol, 32
-ACCEPT
 .loc ../contracts/modules/TIP4_3/TIP4_3Collection.sol, 62
 SETGLOB 15
 .loc ../contracts/modules/TIP4_3/TIP4_3Collection.sol, 0
@@ -1472,8 +1466,6 @@ GETGLOB 13
 GETGLOB 9
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/modules/access/OwnableInternal.sol, 32
-ACCEPT
 .loc ../contracts/modules/access/OwnableInternal.sol, 20
 CALLREF {
 	CALL $_transferOwnership_internal_macro$

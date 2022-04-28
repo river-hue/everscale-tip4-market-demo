@@ -149,15 +149,15 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     function transfer(uint128 amount) external onlyOwner {
         address _owner = owner();
         TvmCell empty;
-        ITokenWallet(_tokenWallet).transfer{value: 0 , flag: 64, bounce: true}(amount, _owner, 0.2 ton, _owner, false, empty);
+        ITokenWallet(_tokenWallet).transfer{value: 0, flag: 64, bounce: true}(amount, _owner, 0.2 ton, _owner, false, empty);
     }
 
     // Transfer Ever to Owner
-    function transferEver(uint128 value) external onlyOwner {
+    function transferEver(uint128 value, uint16 flag, bool bounce) public onlyOwner {
         address _owner = owner();
         TvmCell empty;
         ExtraCurrencyCollection c;
-        _owner.transfer({value: value, bounce: false, flag: 0, body: empty, currencies: c});
+        _owner.transfer(value,bounce,flag,empty,c);
     }
 
     // Transfer NFT to Reciever

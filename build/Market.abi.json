@@ -117,7 +117,9 @@
 		{
 			"name": "transferEver",
 			"inputs": [
-				{"name":"value","type":"uint128"}
+				{"name":"value","type":"uint128"},
+				{"name":"flag","type":"uint16"},
+				{"name":"bounce","type":"bool"}
 			],
 			"outputs": [
 			]

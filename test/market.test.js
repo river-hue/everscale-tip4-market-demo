@@ -14,7 +14,7 @@ describe('Test Market contract', async function () {
   /** @type {Account} */
   let marketOwner;
 
-  describe.only('Contracts', async function () {
+  describe('Contracts', async function () {
     it('Should Load contract factory', async function () {
       let Market = await locklift.factory.getContract("Market");
 
@@ -47,7 +47,7 @@ describe('Test Market contract', async function () {
   })
 
   describe('Market', function () {
-    describe.only('Owner', function () {
+    describe('Owner', function () {
       describe('batchTransferNft()', function() {
         it('should transferOwnership nft to reciever iff owner', async function () {
           this.timeout(20000);
@@ -203,7 +203,29 @@ describe('Test Market contract', async function () {
         })
       })
       describe('transferEver()', function () {
-        it('should transfer Ever to owner iff owner')
+        it('should transfer Ever to owner iff owner', async function() {
+          let previousOwner = await locklift.ton.getBalance(marketOwner.address)
+          let previousMarket = await locklift.ton.getBalance(market.address)
+
+          const withdraw = 2000;
+
+          marketOwner.runTarget({
+            contract: market,
+            method: 'transferEver',
+            params: {
+              value: withdraw,
+              flag: 0
+            },
+            keyPair: marketOwner.keyPair,
+            value: locklift.utils.convertCrystal(1, 'nano')
+          })
+
+          let afterOwner = await locklift.ton.getBalance(marketOwner.address)
+          let afterMarket = await locklift.ton.getBalance(market.address)
+
+          expect(afterOwner.toNumber()).to.equal(previousOwner.toNumber() + withdraw)
+          expect(afterMarket.toNumber()).to.equal(previousMarket.toNumber() - withdraw)
+        })
         it('should reject if not owner')
       })
       describe('.transfer()', function () {
@@ -242,7 +264,7 @@ describe('Test Market contract', async function () {
               payload: payload,
             },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(2, 'nano')
+            value: locklift.utils.convertCrystal(4, 'nano')
           })
 
           let prev_acc = await marketOwnerWallet.call({
@@ -288,7 +310,7 @@ describe('Test Market contract', async function () {
 
         })
       })
-      describe.only('.batchMintNft()', async function() {
+      describe('.batchMintNft()', async function() {
         it('Should mint new Nft', async function () {
           this.timeout(20000);
 
@@ -541,7 +563,7 @@ describe('Test Market contract', async function () {
                 payload
               },
               keyPair: marketOwner.keyPair,
-              value: locklift.utils.convertCrystal(2, 'nano')
+              value: locklift.utils.convertCrystal(10, 'nano')
             })
           }
 
