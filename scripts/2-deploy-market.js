@@ -73,7 +73,11 @@ async function main() {
   let k = Math.floor(amount / INCREMENT)
   let rem = amount % INCREMENT;
 
-  const tempAdmin = await deployAccount(keyPair, Math.floor(amount * 3.4));
+  const tempAdmin = await deployAccount(keyPair, Math.floor(amount * 3.4) + 5);
+  console.log(`Deployed TempAdmin with ${Math.floor(amount * 3.4) + 1} ever`)
+  console.log(`TempAdmin Account: ${tempAdmin.address}`)
+  console.log(`TempAdmin Public`, tempAdmin.keyPair.public)
+  console.log(`TempAdmin Key`, tempAdmin.keyPair.secret)
 
   const spinner = ora('Deploying Market').start();
   let market = await deployMarket(tempAdmin, tokenRoot, { minNftTokenPrice: config.nftPrice, remainOnNft: 0.3 })
@@ -85,7 +89,7 @@ async function main() {
     name: config.nftName,
     description: config.nftDescription,
     image_url: config.nftUrl,
-  }).map((val, id) => ({id, ...val})).map(JSON.stringify)
+  }).map((val, id) => ({ id, ...val })).map(JSON.stringify)
 
   try {
 
@@ -98,9 +102,9 @@ async function main() {
         method: 'batchMintNft',
         params: { owner: market.address, jsons: jsons },
         keyPair: tempAdmin.keyPair,
-        value: locklift.utils.convertCrystal(jsons.length*3.3 , 'nano')
+        value: locklift.utils.convertCrystal(jsons.length * 3.3, 'nano')
       })
-      spinner.text = `Minted NFT ${(i+1)*INCREMENT}/${amount}: Tx: ${tx.transaction.id}`
+      spinner.text = `Minted NFT ${(i + 1) * INCREMENT}/${amount}: Tx: ${tx.transaction.id}`
       tx_results.push({ txStatus: tx.transaction.status_name, txId: tx.transaction.id, jsons })
     }
   } catch (e) {
@@ -108,7 +112,7 @@ async function main() {
   }
 
   spinner.text = 'Minting Completed, Outputting Result Transfering to Owner'
-  
+
   await tempAdmin.runTarget({
     contract: market,
     method: 'transferOwnership',
@@ -123,6 +127,9 @@ async function main() {
 
   spinner.text = `Swiping Temporary Admin: ${tempAdmin.address} back to Giver ${giverAddress}`
 
+  await new Promise(r => setTimeout(r, 10000))
+  spinner.text = 'Waiting for Bounces to Complete'
+
   await tempAdmin.run({
     method: 'sendTransaction',
     params: {
@@ -134,6 +141,8 @@ async function main() {
     },
     keyPair: tempAdmin.keyPair
   });
+
+  spinner.text = 'Swipe Complete'
 
   await logContract(market)
   console.log(tx_results)
