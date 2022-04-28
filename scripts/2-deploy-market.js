@@ -142,10 +142,11 @@ async function main() {
     keyPair: tempAdmin.keyPair
   });
 
-  spinner.text = 'Swipe Complete'
+  spinner.stopAndPersist('Swipe Complete')
 
   await logContract(market)
   console.log(tx_results)
+
 }
 
 main()
