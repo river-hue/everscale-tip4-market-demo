@@ -48,7 +48,7 @@ describe('Test Market contract', async function () {
 
   describe('Market', function () {
     describe('Owner', function () {
-      describe('batchTransferNft()', function() {
+      describe('batchTransferNft()', function () {
         it('should transferOwnership nft to reciever iff owner', async function () {
           this.timeout(20000);
 
@@ -56,37 +56,41 @@ describe('Test Market contract', async function () {
 
           let ex_json = `{nonce: "${getRandomNonce()}"}`
           let before = await getPurchaseCount(market)
-          let nftId = before.toNumber();
-
-          let nft = await getNftById(market, nftId)
+          let beforeSupply = await getTotalSupply(market)
 
           const account2 = await deployAccount(keyPairs[1], 100)
 
-          await marketOwner.runTarget({
-            contract: market,
-            method: 'mintNft',
-            params: { owner: market.address, json: ex_json },
-            keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(4, 'nano')
-          })
+          for (let i = 0; i < 4; i++) {
+            await marketOwner.runTarget({
+              contract: market,
+              method: 'mintNft',
+              params: { owner: market.address, json: ex_json },
+              keyPair: marketOwner.keyPair,
+              value: locklift.utils.convertCrystal(4, 'nano')
+            })
+          }
 
+          console.log(market.address)
           await marketOwner.runTarget({
             contract: market,
             method: 'batchTransferNft',
-            params: { newOwner: account2.address, remainingGasTo: marketOwner.address, amount: 1 },
+            params: { newOwner: account2.address, remainingGasTo: marketOwner.address, amount: 4 },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(10, 'nano')
-          })
-
-          let resInfo = await nft.call({
-            method: 'getInfo',
-            params: { answerId: 0 }
+            value: locklift.utils.convertCrystal(25, 'nano')
           })
 
           let after = await getPurchaseCount(market)
-
           expect(after.toNumber()).to.be.greaterThan(before.toNumber())
-          expect(resInfo.owner).to.equal(account2.address)
+          
+          let start = before.toNumber()
+          for (let i = 0; i < 4; i++) {
+            let nft = await getNftById(market, start + i)
+            let resInfo = await nft.call({
+              method: 'getInfo',
+              params: { answerId: 0 }
+            })
+            expect(resInfo.owner).to.equal(account2.address)
+          }
         })
         it('should reject if not owner', async function () {
           this.timeout(20000);
@@ -150,7 +154,7 @@ describe('Test Market contract', async function () {
           await marketOwner.runTarget({
             contract: market,
             method: 'transferNft',
-            params: { newOwner: account2.address, remainingGasTo: marketOwner.address},
+            params: { newOwner: account2.address, remainingGasTo: marketOwner.address },
             keyPair: marketOwner.keyPair,
             value: locklift.utils.convertCrystal(10, 'nano')
           })
@@ -203,7 +207,7 @@ describe('Test Market contract', async function () {
         })
       })
       describe('transferEver()', function () {
-        it('should transfer Ever to owner iff owner', async function() {
+        it('should transfer Ever to owner iff owner', async function () {
           let previousOwner = await locklift.ton.getBalance(marketOwner.address)
           let previousMarket = await locklift.ton.getBalance(market.address)
 
@@ -310,7 +314,7 @@ describe('Test Market contract', async function () {
 
         })
       })
-      describe('.batchMintNft()', async function() {
+      describe('.batchMintNft()', async function () {
         it('Should mint new Nft', async function () {
           this.timeout(20000);
 
@@ -318,7 +322,7 @@ describe('Test Market contract', async function () {
 
           let ex_json = `{"nonce": "${getRandomNonce()}"}`
           let before = await getTotalSupply(market)
-         
+
           await marketOwner.runTarget({
             contract: market,
             method: 'batchMintNft',
@@ -334,8 +338,8 @@ describe('Test Market contract', async function () {
 
           let start = before.toNumber()
           for (let i = 0; i < 4; i++) {
-            let nft = await getNftById(market, start+i)
-            
+            let nft = await getNftById(market, start + i)
+
             const res_json = await nft.call({
               method: 'getJson',
               params: { answerId: 0 }

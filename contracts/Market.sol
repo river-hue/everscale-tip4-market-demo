@@ -192,7 +192,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
                 address nftAddr = _nftAddress(_purchaseCount+i);
                 
                 Nft(nftAddr).changeOwner{
-                    value: 0 ton,
+                    value: 3 ton,
                     flag: 64,
                     bounce: true
                 }(newOwner, remainingGasTo, callbacks);
