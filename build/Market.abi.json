@@ -56,7 +56,6 @@
 		{
 			"name": "mintNft",
 			"inputs": [
-				{"name":"owner","type":"address"},
 				{"name":"json","type":"string"}
 			],
 			"outputs": [
@@ -65,9 +64,7 @@
 		{
 			"name": "batchMintNft",
 			"inputs": [
-				{"name":"owner","type":"address"},
-				{"name":"json","type":"string"},
-				{"name":"amount","type":"uint256"}
+				{"name":"jsons","type":"string[]"}
 			],
 			"outputs": [
 			]
@@ -83,7 +80,7 @@
 		{
 			"name": "setTokenRoot",
 			"inputs": [
-				{"name":"tokenRoot","type":"address"}
+				{"name":"newTokenRoot","type":"address"}
 			],
 			"outputs": [
 			]

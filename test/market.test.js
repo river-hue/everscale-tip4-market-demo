@@ -288,41 +288,44 @@ describe('Test Market contract', async function () {
 
         })
       })
-      describe('.batchMintNft()', async function() {
+      describe.only('.batchMintNft()', async function() {
         it('Should mint new Nft', async function () {
           this.timeout(20000);
 
           const keyPairs = await locklift.keys.getKeyPairs();
 
-          let ex_json = `{nonce: "${getRandomNonce()}"}`
+          let ex_json = `{"nonce": "${getRandomNonce()}"}`
           let before = await getTotalSupply(market)
-          let nftId = before.toNumber();
-
-          let nft = await getNftById(market, nftId)
-
-          const account2 = await deployAccount(keyPairs[1], 100)
-
-          const res = await marketOwner.runTarget({
+         
+          await marketOwner.runTarget({
             contract: market,
             method: 'batchMintNft',
-            params: { owner: market.address, json: ex_json, amount: 1 },
+            params: {
+              jsons: Array(4).fill(ex_json),
+            },
             keyPair: marketOwner.keyPair,
-            value: locklift.utils.convertCrystal(2, 'nano')
+            value: locklift.utils.convertCrystal(13, 'nano')
           })
 
           let after = await getTotalSupply(market)
-          expect(after.toNumber()).to.be.greaterThan(before.toNumber())
+          expect(after.toNumber()).to.equal(before.toNumber() + 4)
 
-          const res_json = await nft.call({
-            method: 'getJson',
-            params: { answerId: 0 }
-          })
-          const res_info = await nft.call({
-            method: 'getInfo',
-            params: { answerId: 0 }
-          })
-          expect(res_json).to.equal(ex_json)
-          expect(res_info.owner).to.equal(market.address)
+          let start = before.toNumber()
+          for (let i = 0; i < 4; i++) {
+            let nft = await getNftById(market, start+i)
+            
+            const res_json = await nft.call({
+              method: 'getJson',
+              params: { answerId: 0 }
+            })
+            const res_info = await nft.call({
+              method: 'getInfo',
+              params: { answerId: 0 }
+            })
+
+            expect(res_json).to.equal(ex_json)
+            expect(res_info.owner).to.equal(market.address)
+          }
         })
       })
       describe('.mintNft()', async function () {
@@ -331,15 +334,13 @@ describe('Test Market contract', async function () {
 
           const keyPairs = await locklift.keys.getKeyPairs();
 
-          let ex_json = `{nonce: "${getRandomNonce()}"}`
+          let ex_json = `{"nonce": "${getRandomNonce()}","random": "blarg"}`
           let before = await getTotalSupply(market)
           let nftId = before.toNumber();
 
           let nft = await getNftById(market, nftId)
 
-          const account2 = await deployAccount(keyPairs[1], 100)
-
-          const res = await marketOwner.runTarget({
+          await marketOwner.runTarget({
             contract: market,
             method: 'mintNft',
             params: { owner: market.address, json: ex_json },
