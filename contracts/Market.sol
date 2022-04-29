@@ -132,7 +132,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             TvmCell empty;
             callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
 
-            Nft(nftAddr).changeOwner{
+            Nft(nftAddr).transfer{
                 value: 0 ton,
                 flag: 64,
                 bounce: true
@@ -177,7 +177,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             TvmCell empty;
             callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
 
-            Nft(nftAddr).changeOwner{
+            Nft(nftAddr).transfer{
                 value: 0 ton,
                 flag: 64,
                 bounce: true
@@ -195,7 +195,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
             for (uint256 i = 0; i < amount; i++) {
                 address nftAddr = _nftAddress(_purchaseCount+i);
                 
-                Nft(nftAddr).changeOwner{
+                Nft(nftAddr).transfer{
                     value: 3 ton,
                     bounce: true
                 }(newOwner, remainingGasTo, callbacks);

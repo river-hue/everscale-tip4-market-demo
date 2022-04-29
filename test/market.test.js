@@ -89,6 +89,8 @@ describe('Test Market contract', async function () {
               params: { answerId: 0 }
             })
             expect(resInfo.owner).to.equal(account2.address)
+            expect(resInfo.manager).to.equal(account2.address)
+
           }
         })
         it('should reject if not owner', async function () {
@@ -126,6 +128,7 @@ describe('Test Market contract', async function () {
           })
 
           expect(resInfo.owner).to.not.equal(account2.address)
+          expect(resInfo.manager).to.not.equal(account2.address)
         })
       })
       describe('transferNft()', function () {
@@ -167,6 +170,8 @@ describe('Test Market contract', async function () {
 
           expect(after.toNumber()).to.be.greaterThan(before.toNumber())
           expect(resInfo.owner).to.equal(account2.address)
+          expect(resInfo.manager).to.equal(account2.address)
+
         })
         it('should reject if not owner', async function () {
           this.timeout(20000);
@@ -203,6 +208,7 @@ describe('Test Market contract', async function () {
           })
 
           expect(resInfo.owner).to.not.equal(account2.address)
+          expect(resInfo.manager).to.not.equal(account2.address)
         })
       })
       describe('transferEver()', function () {
@@ -552,6 +558,7 @@ describe('Test Market contract', async function () {
           })
 
           expect(resInfo.owner).to.equal(marketOwner.address)
+          expect(resInfo.manager).to.equal(marketOwner.address)
         })
 
         it('should not sell nft if not in order', async function () {
