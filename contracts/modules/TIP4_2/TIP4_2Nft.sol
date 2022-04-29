@@ -1,5 +1,5 @@
-// ItGold.io Contracts (v1.0.0) 
-
+/// We recommend using the compiler version 0.57.1. 
+/// You can use other versions, but we do not guarantee compatibility of the compiler version.
 pragma ton-solidity = 0.57.1;
 
 pragma AbiHeader expire;
@@ -10,18 +10,18 @@ pragma AbiHeader pubkey;
 import '../TIP4_1/TIP4_1Nft.sol';
 import './interfaces/ITIP4_2JSON_Metadata.sol';
 
-/// @title One of the required contracts of an TIP4-1(Non-Fungible Token Standard) compliant technology.
-/// For detect what interfaces a smart contract implements used TIP-6.1 standard. ...
+
+/// This contract implement TIP4_1Nft and ITIP4_2JSON_Metadata (add JSON Metadata)
 /// ... Read more here (https://github.com/nftalliance/docs/blob/main/src/Standard/TIP-6/1.md)
 abstract contract TIP4_2Nft is TIP4_1Nft, ITIP4_2JSON_Metadata {
 
+    /// JSON metadata
+    /// In order to fill in this field correctly, see https://github.com/nftalliance/docs/blob/main/src/Standard/TIP-4/2.md
     string _json;
 
     constructor(
         string json
     ) public {
-        tvm.accept();
-
         _json = json;
 
         _supportedInterfaces[

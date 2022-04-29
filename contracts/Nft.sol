@@ -11,7 +11,7 @@ import './modules/TIP4_1/TIP4_1Nft.sol';
 import './modules/TIP4_3/TIP4_3Nft.sol';
 import './modules/TIP4_2/TIP4_2Nft.sol';
 
-contract Nft is TIP4_1Nft, TIP4_3Nft, TIP4_2Nft {
+contract Nft is TIP4_1Nft, TIP4_2Nft, TIP4_3Nft {
 
     constructor(
         address owner,
@@ -35,13 +35,37 @@ contract Nft is TIP4_1Nft, TIP4_3Nft, TIP4_2Nft {
         tvm.accept();
     }
 
-    function changeOwner(
-        address newOwner, 
+    function _beforeTransfer(
+        address to, 
         address sendGasTo, 
         mapping(address => CallbackParams) callbacks
-    ) public virtual override(TIP4_1Nft, TIP4_3Nft) onlyManager {
-        TIP4_3Nft.changeOwner(newOwner, sendGasTo, callbacks);
+    ) internal virtual override(TIP4_1Nft, TIP4_3Nft) {
+        TIP4_3Nft._destructIndex(sendGasTo);
     }
 
+    function _afterTransfer(
+        address to, 
+        address sendGasTo, 
+        mapping(address => CallbackParams) callbacks
+    ) internal virtual override(TIP4_1Nft, TIP4_3Nft) {
+        TIP4_3Nft._deployIndex();
+    }
 
+    function _beforeChangeOwner(
+        address oldOwner, 
+        address newOwner,
+        address sendGasTo, 
+        mapping(address => CallbackParams) callbacks
+    ) internal virtual override(TIP4_1Nft, TIP4_3Nft) {
+        TIP4_3Nft._destructIndex(sendGasTo);
+    }   
+
+    function _afterChangeOwner(
+        address oldOwner, 
+        address newOwner,
+        address sendGasTo, 
+        mapping(address => CallbackParams) callbacks
+    ) internal virtual override(TIP4_1Nft, TIP4_3Nft) {
+        TIP4_3Nft._deployIndex();
+    }
 }

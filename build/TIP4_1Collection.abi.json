@@ -49,26 +49,6 @@
 			]
 		},
 		{
-			"name": "resolveCodeHashNft",
-			"inputs": [
-				{"name":"answerId","type":"uint32"}
-			],
-			"outputs": [
-				{"name":"codeHashData","type":"uint256"}
-			]
-		},
-		{
-			"name": "resolveNft",
-			"inputs": [
-				{"name":"answerId","type":"uint32"},
-				{"name":"addrRoot","type":"address"},
-				{"name":"id","type":"uint256"}
-			],
-			"outputs": [
-				{"name":"addrNft","type":"address"}
-			]
-		},
-		{
 			"name": "supportsInterface",
 			"inputs": [
 				{"name":"answerId","type":"uint32"},

@@ -20,7 +20,7 @@ PUSHCONT {
 IF
 LDMSGADDR
 ENDS
-.loc ../contracts/modules/TIP4_3/Index.sol, 17
+.loc ../contracts/modules/TIP4_3/Index.sol, 28
 GETGLOB 1
 PUSHREF {
 	DUP
@@ -105,7 +105,7 @@ CALLREF {
 	}
 	IFELSE
 }
-.loc ../contracts/modules/TIP4_3/Index.sol, 18
+.loc ../contracts/modules/TIP4_3/Index.sol, 29
 PUSHREF {
 	.blob x53616c7420646f65736e277420636f6e7461696e20616e792076616c7565
 }
@@ -113,7 +113,7 @@ OVER
 ISNULL
 NOT
 THROWARGIFNOT 102
-.loc ../contracts/modules/TIP4_3/Index.sol, 19
+.loc ../contracts/modules/TIP4_3/Index.sol, 30
 DUP
 ISNULL
 THROWIF 63
@@ -123,24 +123,24 @@ LDMSGADDR
 LDMSGADDR
 DROP
 BLKDROP2 1, 2
-.loc ../contracts/modules/TIP4_3/Index.sol, 23
+.loc ../contracts/modules/TIP4_3/Index.sol, 34
 GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWIFNOT 100
-.loc ../contracts/modules/TIP4_3/Index.sol, 24
+.loc ../contracts/modules/TIP4_3/Index.sol, 35
 ACCEPT
-.loc ../contracts/modules/TIP4_3/Index.sol, 25
+.loc ../contracts/modules/TIP4_3/Index.sol, 36
 OVER
 SETGLOB 11
-.loc ../contracts/modules/TIP4_3/Index.sol, 26
+.loc ../contracts/modules/TIP4_3/Index.sol, 37
 SETGLOB 12
-.loc ../contracts/modules/TIP4_3/Index.sol, 27
+.loc ../contracts/modules/TIP4_3/Index.sol, 38
 PARSEMSGADDR
 INDEX 3
 PLDU 256
 PUSHCONT {
-	.loc ../contracts/modules/TIP4_3/Index.sol, 28
+	.loc ../contracts/modules/TIP4_3/Index.sol, 39
 	DUP
 	SETGLOB 11
 	.loc ../contracts/modules/TIP4_3/Index.sol, 0
@@ -162,7 +162,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/modules/TIP4_3/Index.sol, 32
+.loc ../contracts/modules/TIP4_3/Index.sol, 46
 LDU 32
 GETGLOB 4
 ROT
@@ -254,7 +254,7 @@ THROW 0
 CALL $getInfo_internal_macro$
 
 .macro getInfo_internal_macro
-.loc ../contracts/modules/TIP4_3/Index.sol, 37
+.loc ../contracts/modules/TIP4_3/Index.sol, 51
 GETGLOB 4
 PUSHINT 0
 SETINDEXQ 2
@@ -275,7 +275,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/modules/TIP4_3/Index.sol, 44
+.loc ../contracts/modules/TIP4_3/Index.sol, 60
 OVER
 PUSHCONT {
 	LDREF
@@ -300,7 +300,7 @@ THROW 0
 CALL $destruct_internal_macro$
 
 .macro destruct_internal_macro
-.loc ../contracts/modules/TIP4_3/Index.sol, 45
+.loc ../contracts/modules/TIP4_3/Index.sol, 61
 PUSHREF {
 	.blob x4d6574686f6420666f72204e4654206f6e6c79
 }
@@ -308,7 +308,7 @@ GETGLOB 9
 GETGLOB 10
 SDEQ
 THROWARGIFNOT 101
-.loc ../contracts/modules/TIP4_3/Index.sol, 46
+.loc ../contracts/modules/TIP4_3/Index.sol, 62
 NEWC
 STSLICECONST x42_
 STSLICE

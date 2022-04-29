@@ -5,9 +5,10 @@ pragma AbiHeader time;
 pragma AbiHeader pubkey;
 
 import "./modules/TIP4_3/TIP4_3Collection.sol";
+import "./modules/access/OwnableInternal.sol";
 import "./Nft.sol";
 
-contract Collection is TIP4_3Collection {
+contract Collection is TIP4_3Collection, OwnableInternal {
 	/// _remainOnNft - the number of crystals that will remain after the entire mint
 	/// process is completed on the Nft contract
 	uint128 _remainOnNft;
@@ -16,12 +17,13 @@ contract Collection is TIP4_3Collection {
 		TvmCell codeNft,
 		TvmCell codeIndex,
 		TvmCell codeIndexBasis,
-		address ownerPubkey,
+		address owner,
 		uint128 remainOnNft
 	)
 		public
+		OwnableInternal(owner)
 		TIP4_1Collection(codeNft)
-		TIP4_3Collection(codeIndex, codeIndexBasis, ownerPubkey)
+		TIP4_3Collection(codeIndex, codeIndexBasis)
 	{
 		tvm.accept();
 		_remainOnNft = remainOnNft;
@@ -52,7 +54,7 @@ contract Collection is TIP4_3Collection {
 	}
 
 	function _nftAddress(uint256 id) internal view returns (address nft) {
-		return (resolveNft(address(this), id));
+		return _resolveNft(id);
 	}
 
 	function _buildNftState(TvmCell code, uint256 id)

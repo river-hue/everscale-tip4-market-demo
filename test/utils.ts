@@ -7,7 +7,7 @@ export interface LockLift {
   factory: { getContract: (contract: string) => Promise<Contract>, getAccount: (type: string) => Promise<Account> },
   keys: { getKeyPairs: () => Promise<KeyPair[]>},
   utils: { convertCrystal: (balance: number| string, type: 'nano' | string ) => string, zeroAddress: string },
-  ton: { getBalance: (address: string) => string }
+  ton: { getBalance: (address: string) => Promise<BigNumber> }
   giver: Account
 }
 export interface KeyPair { public: string, secret: string }
@@ -60,7 +60,7 @@ export const getRandomNonce = () => Math.random() * 64000 | 0;
 
 export async function logContract(contract: Contract) {
   const balance = await locklift.ton.getBalance(contract.address);
-  logger.log(`${contract.name} (${contract.address}) - ${locklift.utils.convertCrystal(balance, 'ton')}`);
+  logger.log(`${contract.name} (${contract.address}) - ${locklift.utils.convertCrystal(balance.toNumber(), 'ton')}`);
 };
 
 export async function getAccount(keyPair: KeyPair, address: string) {
@@ -140,12 +140,12 @@ export async function deployMarket(account: Account, tokenRoot: Contract, config
       codeNft: Nft.code,
       codeIndex: Index.code,
       codeIndexBasis: IndexBasis.code,
-      ownerPubkey: account.address,
+      owner: account.address,
       remainOnNft: locklift.utils.convertCrystal(remainOnNft, 'nano'),
     },
     initParams: {},
     keyPair: account.keyPair,
-  }, locklift.utils.convertCrystal(1, 'nano'));
+  }, locklift.utils.convertCrystal(4, 'nano'));
 }
 
 export async function deployTokenWallet(account: Account, tokenRoot: Contract): Promise<Contract> {

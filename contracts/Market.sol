@@ -16,6 +16,11 @@ import "./Collection.sol";
 
 contract Market is Collection, IAcceptTokensTransferCallback {
 
+    /**
+    * Errors
+    **/
+    uint8 constant value_is_less_than_required = 104;
+
     address _tokenWallet;
     address _tokenRoot;
     uint256 _minNftTokenPrice;
@@ -27,13 +32,13 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         TvmCell codeNft,
         TvmCell codeIndex,
         TvmCell codeIndexBasis,
-        address ownerPubkey,
+        address owner,
         uint128 remainOnNft
     ) Collection(
         codeNft, 
         codeIndex,
         codeIndexBasis,
-        ownerPubkey,
+        owner,
         remainOnNft
     ) public {
        tvm.accept();
@@ -60,7 +65,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     function mintNft(string json) public virtual onlyOwner {
         require(
 			msg.value > _remainOnNft + 0.1 ton,
-			CollectionErrors.value_is_less_than_required
+			value_is_less_than_required
 		);
 		tvm.rawReserve(msg.value, 1);
         _mintNft(this, json, 0, 128);
@@ -69,18 +74,12 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     function batchMintNft(string[] jsons) public virtual onlyOwner {
         require(
 			msg.value > _remainOnNft + (3 ton * jsons.length),
-			CollectionErrors.value_is_less_than_required
+			value_is_less_than_required
 		);
 
         for ((string json) : jsons) {
             _mintNft(this, json, 3 ton, 0);
         }
-    }
-
-    function setTokenWallet(address newTokenWallet) public {
-        require(msg.sender == _tokenRoot, TokenErrors.WRONG_ROOT_OWNER);
-        tvm.accept();
-        _tokenWallet = newTokenWallet;
     }
 
     function setTokenRoot(address newTokenRoot) public onlyOwner {
@@ -95,6 +94,12 @@ contract Market is Collection, IAcceptTokensTransferCallback {
            callback: setTokenWallet,
            bounce: true
         }(address(this), 0.1 ton);
+    }
+
+    function setTokenWallet(address newTokenWallet) public {
+        require(msg.sender == _tokenRoot, TokenErrors.WRONG_ROOT_OWNER);
+        tvm.accept();
+        _tokenWallet = newTokenWallet;
     }
 
     function setMinNftTokenPrice(uint256 amount) public onlyOwner {
@@ -156,8 +161,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
     function transferEver(uint128 value, uint16 flag, bool bounce) public onlyOwner {
         address _owner = owner();
         TvmCell empty;
-        ExtraCurrencyCollection c;
-        _owner.transfer(value,bounce,flag,empty,c);
+        _owner.transfer(value,bounce,flag,empty);
     }
 
     // Transfer NFT to Reciever
@@ -193,7 +197,6 @@ contract Market is Collection, IAcceptTokensTransferCallback {
                 
                 Nft(nftAddr).changeOwner{
                     value: 3 ton,
-                    flag: 64,
                     bounce: true
                 }(newOwner, remainingGasTo, callbacks);
             }

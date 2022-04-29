@@ -1,3 +1,5 @@
+/// We recommend using the compiler version 0.57.1. 
+/// You can use other versions, but we do not guarantee compatibility of the compiler version.
 pragma ton-solidity = 0.57.1;
 
 pragma AbiHeader expire;
@@ -9,14 +11,13 @@ import '../TIP4_1/TIP4_1Collection.sol';
 import './interfaces/ITIP4_2JSON_Metadata.sol';
 import './TIP4_2Nft.sol';
 
-/// The contract is the same as tip4-1, but with an added variable in mint for nft (string json)
-/// add change deploy contract in mint & _buildNftState (TIP4_1Nft => TIP4_2Nft)
+
+/// This contract implement TIP4_1Collection and ITIP4_2JSON_Metadata (add JSON Metadata)
+/// Add change deploy contract in _buildNftState (TIP4_1Nft => TIP4_2Nft)
 abstract contract TIP4_2Collection is TIP4_1Collection, ITIP4_2JSON_Metadata {
 
-    /// _remainOnNft - the number of crystals that will remain after the entire mint 
-    /// process is completed on the Nft contract
-    // uint128 _remainOnNft = 0.3 ton;
-
+    /// JSON metadata
+    /// In order to fill in this field correctly, see https://github.com/nftalliance/docs/blob/main/src/Standard/TIP-4/2.md
     string _json;
 
     constructor(
@@ -36,6 +37,7 @@ abstract contract TIP4_2Collection is TIP4_1Collection, ITIP4_2JSON_Metadata {
         return {value: 0, flag: 64, bounce: false} (_json);
     }
 
+    /// Overrides standard method, because Nft contract is changed
     function _buildNftState(
         TvmCell code,
         uint256 id

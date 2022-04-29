@@ -12,11 +12,12 @@ abstract contract OwnableInternal {
         _transferOwnership(owner);
     }
 
-    function owner() public view virtual returns (address __owner) {
+    function owner() public view virtual returns (address owner) {
         return _owner;
     }
 
     function transferOwnership(address newOwner) public virtual onlyOwner {
+        require(newOwner.value != 0, 100);
         _transferOwnership(newOwner);
     }
 
@@ -28,7 +29,8 @@ abstract contract OwnableInternal {
 
     /// @dev придумать, как хранить ошибки в extensions
     modifier onlyOwner() virtual {
-        require(_owner == msg.sender, 100);
+        require(owner() == msg.sender, 100);
+        require(msg.value != 0, 101);
         _;
     }
 
