@@ -1,3 +1,4 @@
+// @ts-check
 const ora = require('ora')
 const prompts = require('prompts')
 const fs = require('fs/promises')
@@ -37,8 +38,6 @@ async function main() {
     ])
 
     const sender = await getAccount(response, response.account)
-    const market = await locklift.factory.getContract("Market")
-    market.setAddress(response.marketAddr)
     const reciever = response.reciever;
 
     const confirm = await prompts([
@@ -64,7 +63,7 @@ async function main() {
         keyPair: sender.keyPair
       });
 
-    console.log(`Sent ${response.amount} Ever to Account: ${response.reciever}`)
+    console.log(`Sent All Ever to Account: ${response.reciever}`)
 }
 
 

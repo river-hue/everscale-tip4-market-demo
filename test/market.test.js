@@ -1,3 +1,4 @@
+// @ts-check
 const { expect } = require("chai");
 const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, LockLift, Account, Contract, getTokenWallet, logContract, getTotalSupply, getNftById, getPurchaseCount, getRandomNonce } = require("./utils");
 
@@ -577,7 +578,7 @@ describe('Test Market contract', async function () {
             value: locklift.utils.convertCrystal(2, 'nano')
           })
 
-          let curr_supply = await getTotalSupply(market)
+          let curr_supply = (await getTotalSupply(market)).toNumber()
 
           // Set NFT Owner
           let payload = await market.call({
@@ -608,7 +609,7 @@ describe('Test Market contract', async function () {
 
           let curr_count_after = await getPurchaseCount(market)
 
-          expect(curr_count_after.toNumber()).to.be.equal(curr_supply.toNumber())
+          expect(curr_count_after.toNumber()).to.be.equal(curr_supply)
         })
       })
     })

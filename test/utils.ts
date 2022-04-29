@@ -3,27 +3,40 @@ const logger = require('mocha-logger');
 
 declare var locklift: LockLift;
 
+export type Address = `0:${string}`
+export const isValidTonAddress = (address: string): address is Address => /^(?:-1|0):[0-9a-fA-F]{64}$/.test(address);
+
 export interface LockLift {
+  network: string,
   factory: { getContract: (contract: string) => Promise<Contract>, getAccount: (type: string) => Promise<Account> },
-  keys: { getKeyPairs: () => Promise<KeyPair[]>},
-  utils: { convertCrystal: (balance: number| string, type: 'nano' | string ) => string, zeroAddress: string },
-  ton: { getBalance: (address: string) => Promise<BigNumber> }
-  giver: Account
+  keys: { getKeyPairs: () => Promise<KeyPair[]> },
+  utils: { convertCrystal: (balance: number | `${number}`, type: 'nano' | string) => string, zeroAddress: Address },
+  ton: { getBalance: (address: Address) => Promise<BigNumber> }
+  giver: Giver
 }
+
 export interface KeyPair { public: string, secret: string }
-export interface Contract { 
+export interface Contract {
   name: string,
-  address: string,
+  address: Address,
   keyPair: KeyPair,
   code: string,
   abi: string,
-  setAddress: (address: string) => void;
-  call: (opts: {method: string, params: any}) => Promise<any>,
+  setAddress: (address: Address) => void;
+  call: (opts: { method: string, params: any }) => Promise<any>,
 };
-export interface Account extends Contract  { 
+
+export interface Giver {
+  locklift: LockLift,
+  giver: Account,
+  deployContract: (opts: { contract: Contract, constructorParams: any, initParams: any, keyPair?: KeyPair }, value?: string) => Promise<Contract>
+}
+
+export interface Account extends Contract {
   setKeyPair: (keyPair: KeyPair) => void,
   deployContract: (opts: { contract: Contract, constructorParams: any, initParams: any, keyPair: KeyPair }, value?: string) => Promise<Contract>,
-  runTarget: (opts: {contract: Contract, method: string, params: any, keyPair: KeyPair, value: string}) => Promise<Tx>
+  runTarget: (opts: { contract: Contract, method: string, params: any, keyPair: KeyPair, value: string }) => Promise<Tx>,
+  run: (opts: { method: string, params: any, keyPair?: KeyPair }) => Promise<Tx>
 }
 
 export interface Tx {
@@ -54,8 +67,6 @@ export interface Tx {
   out_messages: string[],
 }
 
-export const isValidTonAddress = (address: string) => /^(?:-1|0):[0-9a-fA-F]{64}$/.test(address);
-
 export const getRandomNonce = () => Math.random() * 64000 | 0;
 
 export async function logContract(contract: Contract) {
@@ -63,7 +74,7 @@ export async function logContract(contract: Contract) {
   logger.log(`${contract.name} (${contract.address}) - ${locklift.utils.convertCrystal(balance.toNumber(), 'ton')}`);
 };
 
-export async function getAccount(keyPair: KeyPair, address: string) {
+export async function getAccount(keyPair: KeyPair, address: Address) {
   const account = await locklift.factory.getAccount("Wallet")
   account.setKeyPair(keyPair)
   account.setAddress(address)

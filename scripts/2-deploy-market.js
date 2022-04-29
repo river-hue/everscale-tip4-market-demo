@@ -1,3 +1,4 @@
+// @ts-check
 const ora = require('ora')
 const prompts = require('prompts')
 
@@ -69,6 +70,7 @@ async function main() {
   tokenRoot.setAddress(config.tokenRoot)
 
   const tx_results = []
+  /** @type {number} **/
   const amount = config.nftAmount;
   let k = Math.floor(amount / INCREMENT)
   let rem = amount % INCREMENT;
@@ -89,7 +91,7 @@ async function main() {
     name: config.nftName,
     description: config.nftDescription,
     image_url: config.nftUrl,
-  }).map((val, id) => ({ id, ...val })).map(JSON.stringify)
+  }).map((val, id) => ({ id, ...val })).map(v => JSON.stringify(v))
 
   try {
 
@@ -142,7 +144,7 @@ async function main() {
     keyPair: tempAdmin.keyPair
   });
 
-  spinner.stopAndPersist('Swipe Complete')
+  spinner.stopAndPersist({text: 'Swipe Complete'})
 
   await logContract(market)
   console.log(tx_results)

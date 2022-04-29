@@ -1,3 +1,4 @@
+// @ts-check
 const ora = require('ora')
 const prompts = require('prompts')
 const fs = require('fs/promises')
@@ -103,9 +104,8 @@ async function deployFile(response) {
 
     spinner.text = 'Minting Nfts to Market'
     
-    let start = await getTotalSupply(market)
+    let start = (await getTotalSupply(market)).toNumber()
 
-    start = start.toNumber()
     console.log(start)
     let sample = 1+start;
     console.log(`Start at:${sample}`)

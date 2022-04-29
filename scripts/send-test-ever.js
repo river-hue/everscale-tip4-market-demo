@@ -1,3 +1,4 @@
+// @ts-check
 const ora = require('ora')
 const prompts = require('prompts')
 const fs = require('fs/promises')
