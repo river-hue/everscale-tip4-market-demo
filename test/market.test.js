@@ -14,7 +14,7 @@ describe('Test Market contract', async function () {
   /** @type {Account} */
   let marketOwner;
 
-  describe.only('Contracts', async function () {
+  describe('Contracts', async function () {
     it('Should Load contract factory', async function () {
       let Market = await locklift.factory.getContract("Market");
 
@@ -232,7 +232,7 @@ describe('Test Market contract', async function () {
           expect(Math.abs(afterOwner.toNumber()-previousOwner.toNumber())).to.greaterThanOrEqual(withdraw)
           expect(Math.abs(afterMarket.toNumber()-previousMarket.toNumber())).to.greaterThanOrEqual(withdraw)
         })
-        it.only('should reject if not owner', async function () {
+        it('should reject if not owner', async function () {
           this.timeout(20000);
 
           let previousMarket = await locklift.ton.getBalance(market.address)
