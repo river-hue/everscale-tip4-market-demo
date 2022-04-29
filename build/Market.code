@@ -534,10 +534,8 @@ UFITS 128
 GREATER
 THROWIFNOT 104
 .loc ../contracts/Market.sol, 70
-DEPTH
-ADDCONST -2
-PICK
-PUSHINT 1
+PUSHINT 0
+PUSHINT 4
 RAWRESERVE
 .loc ../contracts/Market.sol, 71
 MYADDR
@@ -604,7 +602,11 @@ MUL
 ADD
 GREATER
 THROWIFNOT 104
-.loc ../contracts/Market.sol, 80
+.loc ../contracts/Market.sol, 79
+PUSHINT 0
+PUSHINT 4
+RAWRESERVE
+.loc ../contracts/Market.sol, 81
 SECOND
 PUSHINT 0
 NULL
@@ -620,7 +622,7 @@ PUSHCONT {
 	NOT
 }
 PUSHCONT {
-	.loc ../contracts/Market.sol, 81
+	.loc ../contracts/Market.sol, 82
 	MYADDR
 	OVER
 	PUSHINT 3000000000
@@ -646,7 +648,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 85
+.loc ../contracts/Market.sol, 86
 OVER
 PUSHCONT {
 	LDREF
@@ -683,7 +685,7 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/Market.sol, 86
+.loc ../contracts/Market.sol, 87
 CALLREF {
 	CALL $_setTokenRoot_internal_macro$
 }
@@ -694,9 +696,9 @@ CALLREF {
 CALL $_setTokenRoot_internal_macro$
 
 .macro _setTokenRoot_internal_macro
-.loc ../contracts/Market.sol, 90
-SETGLOB 21
 .loc ../contracts/Market.sol, 91
+SETGLOB 21
+.loc ../contracts/Market.sol, 92
 PUSHINT 100000000
 MYADDR
 GETGLOB 21
@@ -730,7 +732,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 99
+.loc ../contracts/Market.sol, 100
 OVER
 PUSHCONT {
 	LDREF
@@ -755,14 +757,14 @@ THROW 0
 CALL $setTokenWallet_internal_macro$
 
 .macro setTokenWallet_internal_macro
-.loc ../contracts/Market.sol, 100
+.loc ../contracts/Market.sol, 101
 GETGLOB 9
 GETGLOB 21
 SDEQ
 THROWIFNOT 1020
-.loc ../contracts/Market.sol, 101
-ACCEPT
 .loc ../contracts/Market.sol, 102
+ACCEPT
+.loc ../contracts/Market.sol, 103
 SETGLOB 20
 .loc ../contracts/Market.sol, 0
 
@@ -775,7 +777,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 105
+.loc ../contracts/Market.sol, 106
 OVER
 PUSHCONT {
 	LDREF
@@ -812,9 +814,9 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/Market.sol, 106
-ACCEPT
 .loc ../contracts/Market.sol, 107
+ACCEPT
+.loc ../contracts/Market.sol, 108
 SETGLOB 22
 .loc ../contracts/Market.sol, 0
 
@@ -827,7 +829,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 110
+.loc ../contracts/Market.sol, 111
 OVER
 PUSHCONT {
 	LDREF
@@ -862,17 +864,17 @@ CALLREF {
 THROW 0
 
 .macro onAcceptTokensTransfer_internal_macro
-.loc ../contracts/Market.sol, 118
+.loc ../contracts/Market.sol, 119
 GETGLOB 9
 GETGLOB 20
 SDEQ
 THROWIFNOT 1021
-.loc ../contracts/Market.sol, 121
+.loc ../contracts/Market.sol, 122
 DUP
 CALLREF {
 	CALL $_deserializeNftPurchase_internal_macro$
 }
-.loc ../contracts/Market.sol, 122
+.loc ../contracts/Market.sol, 123
 DUP
 PUSHREFSLICE {
 	.blob x8000000000000000000000000000000000000000000000000000000000000000001_
@@ -882,7 +884,7 @@ PUSHCONT {
 	BLKDROP 7
 }
 IFJMP
-.loc ../contracts/Market.sol, 126
+.loc ../contracts/Market.sol, 127
 GETGLOB 23
 GETGLOB 12
 LESS
@@ -891,16 +893,16 @@ GETGLOB 22
 GEQ
 AND
 PUSHCONT {
-	.loc ../contracts/Market.sol, 127
+	.loc ../contracts/Market.sol, 128
 	GETGLOB 23
 	CALLREF {
 		CALL $_nftAddress_internal_macro$
 	}
-	.loc ../contracts/Market.sol, 128
+	.loc ../contracts/Market.sol, 129
 	GETGLOB 23
 	INC
 	SETGLOB 23
-	.loc ../contracts/Market.sol, 133
+	.loc ../contracts/Market.sol, 134
 	PUSHINT 100000000
 	PUSHREF {
 	}
@@ -918,7 +920,7 @@ PUSHCONT {
 	ROTREV
 	PUSHINT 267
 	DICTSETB
-	.loc ../contracts/Market.sol, 135
+	.loc ../contracts/Market.sol, 136
 	PUSH2 S4, S2
 	ROLL 3
 	TRUE
@@ -940,7 +942,7 @@ PUSHCONT {
 	STDICT
 }
 PUSHCONT {
-	.loc ../contracts/Market.sol, 142
+	.loc ../contracts/Market.sol, 143
 	OVER
 	TRUE
 	PUSH S4
@@ -986,7 +988,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 154
+.loc ../contracts/Market.sol, 155
 OVER
 PUSHCONT {
 	LDREF
@@ -1019,14 +1021,14 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/Market.sol, 155
+.loc ../contracts/Market.sol, 156
 CALLREF {
 	CALL $owner_internal_macro$
 }
-.loc ../contracts/Market.sol, 156
+.loc ../contracts/Market.sol, 157
 PUSHREF {
 }
-.loc ../contracts/Market.sol, 157
+.loc ../contracts/Market.sol, 158
 FALSE
 PUSH S2
 PUSHINT 200000000
@@ -1069,7 +1071,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 161
+.loc ../contracts/Market.sol, 162
 OVER
 PUSHCONT {
 	LDREF
@@ -1108,11 +1110,11 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/Market.sol, 162
+.loc ../contracts/Market.sol, 163
 CALLREF {
 	CALL $owner_internal_macro$
 }
-.loc ../contracts/Market.sol, 164
+.loc ../contracts/Market.sol, 165
 SWAP
 XCHG S2, S3
 NEWC
@@ -1142,7 +1144,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 168
+.loc ../contracts/Market.sol, 169
 OVER
 PUSHCONT {
 	LDREF
@@ -1179,21 +1181,21 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/Market.sol, 171
+.loc ../contracts/Market.sol, 172
 GETGLOB 23
 GETGLOB 12
 LESS
 PUSHCONT {
-	.loc ../contracts/Market.sol, 172
+	.loc ../contracts/Market.sol, 173
 	GETGLOB 23
 	CALLREF {
 		CALL $_nftAddress_internal_macro$
 	}
-	.loc ../contracts/Market.sol, 173
+	.loc ../contracts/Market.sol, 174
 	GETGLOB 23
 	INC
 	SETGLOB 23
-	.loc ../contracts/Market.sol, 178
+	.loc ../contracts/Market.sol, 179
 	PUSHINT 100000000
 	PUSHREF {
 	}
@@ -1211,7 +1213,7 @@ PUSHCONT {
 	ROTREV
 	PUSHINT 267
 	DICTSETB
-	.loc ../contracts/Market.sol, 180
+	.loc ../contracts/Market.sol, 181
 	PUSH2 S2, S3
 	ROLL 3
 	TRUE
@@ -1251,7 +1253,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/Market.sol, 188
+.loc ../contracts/Market.sol, 189
 OVER
 PUSHCONT {
 	LDREF
@@ -1289,7 +1291,7 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/Market.sol, 189
+.loc ../contracts/Market.sol, 190
 DUP
 GTINT 0
 DUP
@@ -1305,7 +1307,7 @@ PUSHCONT {
 }
 IF
 PUSHCONT {
-	.loc ../contracts/Market.sol, 193
+	.loc ../contracts/Market.sol, 194
 	PUSHINT 100000000
 	PUSHREF {
 	}
@@ -1323,21 +1325,21 @@ PUSHCONT {
 	ROTREV
 	PUSHINT 267
 	DICTSETB
-	.loc ../contracts/Market.sol, 195
+	.loc ../contracts/Market.sol, 196
 	PUSHINT 0
 	PUSHCONT {
 		PUSH2 S0, S2
 		LESS
 	}
 	PUSHCONT {
-		.loc ../contracts/Market.sol, 196
+		.loc ../contracts/Market.sol, 197
 		GETGLOB 23
 		OVER
 		ADD
 		CALLREF {
 			CALL $_nftAddress_internal_macro$
 		}
-		.loc ../contracts/Market.sol, 198
+		.loc ../contracts/Market.sol, 199
 		PUSH3 S2, S4, S5
 		ROLL 3
 		TRUE
@@ -1362,13 +1364,13 @@ PUSHCONT {
 		ENDC
 		PUSHINT 0
 		SENDRAWMSG
-		.loc ../contracts/Market.sol, 195
+		.loc ../contracts/Market.sol, 196
 		INC
 		.loc ../contracts/Market.sol, 0
 	}
 	WHILE
 	DROP2
-	.loc ../contracts/Market.sol, 203
+	.loc ../contracts/Market.sol, 204
 	GETGLOB 23
 	OVER
 	ADD
@@ -1384,7 +1386,7 @@ BLKDROP 3
 CALL $_deserializeNftPurchase_internal_macro$
 
 .macro _deserializeNftPurchase_internal_macro
-.loc ../contracts/Market.sol, 208
+.loc ../contracts/Market.sol, 209
 CTOS
 LDMSGADDR
 ENDS
@@ -1394,7 +1396,7 @@ ENDS
 DROP
 GETGLOB 6
 THROWIFNOT 76
-.loc ../contracts/Market.sol, 211
+.loc ../contracts/Market.sol, 212
 OVER
 PUSHCONT {
 	LDREF
@@ -1440,10 +1442,10 @@ THROW 0
 CALL $_serializeNftPurchase_internal_macro$
 
 .macro _serializeNftPurchase_internal_macro
-.loc ../contracts/Market.sol, 213
+.loc ../contracts/Market.sol, 214
 NEWC
 STSLICE
-.loc ../contracts/Market.sol, 214
+.loc ../contracts/Market.sol, 215
 ENDC
 .loc ../contracts/Market.sol, 0
 

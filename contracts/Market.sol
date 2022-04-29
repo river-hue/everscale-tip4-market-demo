@@ -67,7 +67,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
 			msg.value > _remainOnNft + 0.1 ton,
 			value_is_less_than_required
 		);
-		tvm.rawReserve(msg.value, 1);
+		tvm.rawReserve(0, 4);
         _mintNft(this, json, 0, 128);
     }
 
@@ -76,6 +76,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
 			msg.value > _remainOnNft + (3 ton * jsons.length),
 			value_is_less_than_required
 		);
+		tvm.rawReserve(0, 4);
 
         for ((string json) : jsons) {
             _mintNft(this, json, 3 ton, 0);
@@ -166,7 +167,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
 
     // Transfer NFT to Reciever
     function transferNft(address newOwner, address remainingGasTo) external onlyOwner {
-
+        
         // Check if Tickets are not Oversold
         if (_purchaseCount < _totalSupply) {
             address nftAddr = _nftAddress(_purchaseCount);
