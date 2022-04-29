@@ -10,11 +10,12 @@ import './modules/TIP4_1/interfaces/ITIP4_1Collection.sol';
 import './modules/TokenContracts/TokenRoot.sol';
 import './modules/TIP4_3/TIP4_3Collection.sol';
 import './modules/TIP4_1/TIP4_1Collection.sol';
+import './modules/RandomNonce.sol';
 
 import './Nft.sol';
 import "./Collection.sol";
 
-contract Market is Collection, IAcceptTokensTransferCallback {
+contract Market is Collection, RandomNonce, IAcceptTokensTransferCallback {
 
     /**
     * Errors
@@ -35,7 +36,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
         address owner,
         uint128 remainOnNft
     ) Collection(
-        codeNft, 
+        codeNft,
         codeIndex,
         codeIndexBasis,
         owner,
@@ -167,7 +168,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
 
     // Transfer NFT to Reciever
     function transferNft(address newOwner, address remainingGasTo) external onlyOwner {
-        
+
         // Check if Tickets are not Oversold
         if (_purchaseCount < _totalSupply) {
             address nftAddr = _nftAddress(_purchaseCount);
@@ -195,7 +196,7 @@ contract Market is Collection, IAcceptTokensTransferCallback {
 
             for (uint256 i = 0; i < amount; i++) {
                 address nftAddr = _nftAddress(_purchaseCount+i);
-                
+
                 Nft(nftAddr).transfer{
                     value: 3 ton,
                     bounce: true
