@@ -8,3 +8,4 @@ TVM-linker/
 
 #KEYS
 *.key
+*.env
