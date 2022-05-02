@@ -203,7 +203,9 @@ export async function deployMarket(account: Account, tokenRoot: Contract, config
       owner: account.address,
       remainOnNft: locklift.utils.convertCrystal(remainOnNft, 'nano'),
     },
-    initParams: {},
+    initParams: {
+      _randomNonce: getRandomNonce()
+    },
     keyPair: account.keyPair,
   }, locklift.utils.convertCrystal(4, 'nano'));
 }
