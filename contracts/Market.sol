@@ -47,19 +47,19 @@ contract Market is Collection, RandomNonce, IAcceptTokensTransferCallback {
        _setTokenRoot(tokenRoot);
     }
 
-    function tokenRoot() external view virtual responsible returns (address root) {
+    function tokenRoot() external view virtual responsible returns (address) {
         return {value: 0, flag: 64, bounce: true} (_tokenRoot);
     }
 
-    function minNftTokenPrice() external view virtual responsible returns (uint256 amount) {
+    function minNftTokenPrice() external view virtual responsible returns (uint256) {
         return {value: 0, flag: 64, bounce: true} (_minNftTokenPrice);
     }
 
-    function purchaseCount() external view virtual responsible returns (uint count) {
+    function purchaseCount() external view virtual responsible returns (uint) {
         return {value: 0, flag: 64, bounce: true} (_purchaseCount);
     }
 
-    function tokenWallet() external view virtual responsible returns (address wallet) {
+    function tokenWallet() external view virtual responsible returns (address) {
         return {value: 0, flag: 64, bounce: true} (_tokenWallet);
     }
 
