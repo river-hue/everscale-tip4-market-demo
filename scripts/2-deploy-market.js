@@ -1,8 +1,9 @@
 // @ts-check
 const ora = require('ora')
 const prompts = require('prompts')
+const path = require('node:path')
 
-const { deployMarket, deployAccount, deployTokenRoot, getAccount, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract, getTotalSupply } = require('../test/utils')
+const { deployMarket, deployAccount, deployTokenRoot, getAccount, Contract, LockLift, getRandomNonce, isValidTonAddress, logContract, getTotalSupply, batchMintNft, Nft } = require('../test/utils')
 
 /** @type {LockLift} */
 var locklift = global.locklift;
@@ -86,28 +87,32 @@ async function main() {
   await logContract(market)
 
   spinner.text = 'Deploying Nfts'
-
-  const payloads = Array(amount).fill({
+  const nfts = Array(amount).fill(0).map((_,id) => ({
+    id,
+    type: 'Basic Nft',
     name: config.nftName,
     description: config.nftDescription,
-    image_url: config.nftUrl,
-  }).map((val, id) => ({ id, ...val })).map(v => JSON.stringify(v))
+    preview: {
+      source: config.nftUrl,
+      mimetype: `image/${path.extname(config.nftUrl).substring(1)}`
+    },
+    files: [{
+      source: config.nftUrl,
+      mimetype: `image/${path.extname(config.nftUrl).substring(1)}`
+    }],
+    external_url: "",
+  }))
 
+  console.log(nfts)
   try {
 
     for (let i = 0; i < amount; i += INCREMENT) {
       spinner.text = `Minting NFT ${i}/${amount}: ${config.nftUrl}:`
-      let jsons = payloads.slice(i, i + INCREMENT);
+      let nftSlice = nfts.slice(i, i + INCREMENT);
 
-      let tx = await tempAdmin.runTarget({
-        contract: market,
-        method: 'batchMintNft',
-        params: { owner: market.address, jsons: jsons },
-        keyPair: tempAdmin.keyPair,
-        value: locklift.utils.convertCrystal(jsons.length * 3.3, 'nano')
-      })
+      let tx = await batchMintNft(market, tempAdmin, nftSlice);
       spinner.text = `Minted NFT ${(i + 1) * INCREMENT}/${amount}: Tx: ${tx.transaction.id}`
-      tx_results.push({ txStatus: tx.transaction.status_name, txId: tx.transaction.id, jsons })
+      tx_results.push({ txStatus: tx.transaction.status_name, txId: tx.transaction.id, jsons: nftSlice.map(m => JSON.stringify(m)) })
     }
   } catch (e) {
     console.error(e)

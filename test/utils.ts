@@ -6,9 +6,58 @@ declare var locklift: LockLift;
 export type Address = `0:${string}`
 export const isValidTonAddress = (address: string): address is Address => /^(?:-1|0):[0-9a-fA-F]{64}$/.test(address);
 
+
+namespace ABI {
+
+  export type TypeLabelPrimitive = `uint${number}` | `int${number}` | "address" | "bool" | "cell"
+  export type TypeLabelComplex = `optional(${TypeLabelPrimitive})` | `mapping(${TypeLabelPrimitive},${"tuple" | TypeLabelPrimitive}})`
+  export type Input = { name: string, type: TypeLabelPrimitive | TypeLabelComplex }
+  export type InputComponents = { components: Input[] }
+  export type Output = { name: string, type: TypeLabelPrimitive | TypeLabelComplex }
+  export type Data = { key: number, name: string, type: TypeLabelPrimitive }
+  export type Function = {
+    name: string,
+    inputs: (Input | InputComponents)[],
+    outputs: Output[],
+  }
+
+  export type Instance = {
+    "ABI version": number,
+    version: `${number}`,
+    header: string[],
+    functions: Function[],
+    data: Data[],
+    events: Function[],
+    fields: { name: string, type: TypeLabelComplex }[]
+  }
+}
+
+/** TIP4.2
+ *  Non-Fungible Token JSON Metadata Standard
+ * 
+ *  See: https://github.com/nftalliance/docs/blob/main/src/standard/TIP-4/2.md for reference.
+ * */
+export namespace TIP4 {
+  export type NftMetadata = {
+    id: number,
+    type: string
+    name: string
+    description: string
+    preview: {
+      source: string,
+      mimetype: string
+    },
+    files: {
+      source: string,
+      mimetype: string
+    }[],
+    external_url: string,
+  }
+}
+
 export interface LockLift {
   network: string,
-  factory: { getContract: (contract: string) => Promise<Contract>, getAccount: (type: string) => Promise<Account> },
+  factory: { getContract: (contract: string, build?: string) => Promise<Contract>, getAccount: (type: string) => Promise<Account> }
   keys: { getKeyPairs: () => Promise<KeyPair[]> },
   utils: { convertCrystal: (balance: number | `${number}`, type: 'nano' | string) => string, zeroAddress: Address },
   ton: { getBalance: (address: Address) => Promise<BigNumber> }
@@ -21,7 +70,7 @@ export interface Contract {
   address: Address,
   keyPair: KeyPair,
   code: string,
-  abi: string,
+  abi: ABI.Instance,
   setAddress: (address: Address) => void;
   call: (opts: { method: string, params: any }) => Promise<any>,
 };
@@ -136,8 +185,8 @@ export async function deployTokenRoot(account: Account, config: { name: string, 
 export async function deployMarket(account: Account, tokenRoot: Contract, config = { minNftTokenPrice: 10, remainOnNft: 0 }): Promise<Contract> {
   const Market = await locklift.factory.getContract("Market");
   const Nft = await locklift.factory.getContract("Nft");
-  const Index = await locklift.factory.getContract("Index");
-  const IndexBasis = await locklift.factory.getContract("IndexBasis");
+  const Index = await locklift.factory.getContract("Index", 'contracts/modules/TIP4_3/compiled');
+  const IndexBasis = await locklift.factory.getContract("IndexBasis", 'contracts/modules/TIP4_3/compiled');
 
   let { minNftTokenPrice, remainOnNft } = config;
   minNftTokenPrice = minNftTokenPrice || 10;
@@ -229,5 +278,16 @@ export async function getNftById(market: Contract, id: number): Promise<Contract
   nft.setAddress(nftAddr);
 
   return nft;
+}
+
+export async function batchMintNft(market: Contract, account: Account, nfts: TIP4.NftMetadata[], feePerNft = 3.3): Promise<Tx> {
+  let jsons = nfts.map(m => JSON.stringify(m));
+  return await account.runTarget({
+    contract: market,
+    method: 'batchMintNft',
+    params: { owner: market.address, jsons: jsons },
+    keyPair: account.keyPair,
+    value: locklift.utils.convertCrystal(jsons.length * feePerNft, 'nano')
+  })
 }
 
