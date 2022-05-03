@@ -28,7 +28,7 @@ contract Collection is TIP4_3Collection, OwnableInternal {
 		tvm.accept();
 		_remainOnNft = remainOnNft;
 	}
-
+	
 	function _mintNft(address owner, string json, uint128 value, uint16 flag) internal virtual {
 		
 		uint256 id = uint256(_totalSupply);

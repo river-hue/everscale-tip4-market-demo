@@ -6,7 +6,6 @@ declare var locklift: LockLift;
 export type Address = `0:${string}`
 export const isValidTonAddress = (address: string): address is Address => /^(?:-1|0):[0-9a-fA-F]{64}$/.test(address);
 
-
 namespace ABI {
 
   export type TypeLabelPrimitive = `uint${number}` | `int${number}` | "address" | "bool" | "cell"

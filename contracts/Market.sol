@@ -16,7 +16,6 @@ import './Nft.sol';
 import "./Collection.sol";
 
 contract Market is Collection, RandomNonce, IAcceptTokensTransferCallback {
-
     /**
     * Errors
     **/
@@ -184,25 +183,6 @@ contract Market is Collection, RandomNonce, IAcceptTokensTransferCallback {
                 flag: 64,
                 bounce: true
             }(newOwner, remainingGasTo, callbacks);
-        }
-    }
-
-    function batchTransferNft(address newOwner, address remainingGasTo, uint256 amount) external onlyOwner {
-        if (amount > 0 && _purchaseCount + amount - 1 < _totalSupply) {
-            // Set Simple Callback for TIP4_1#changeOwner
-            mapping(address => ITIP4_1NFT.CallbackParams) callbacks;
-            TvmCell empty;
-            callbacks[newOwner] = ITIP4_1NFT.CallbackParams(0.1 ton,empty);
-
-            for (uint256 i = 0; i < amount; i++) {
-                address nftAddr = _nftAddress(_purchaseCount+i);
-
-                Nft(nftAddr).transfer{
-                    value: 3 ton,
-                    bounce: true
-                }(newOwner, remainingGasTo, callbacks);
-            }
-            _purchaseCount += amount;
         }
     }
 
