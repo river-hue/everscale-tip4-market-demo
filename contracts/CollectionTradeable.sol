@@ -6,19 +6,28 @@ pragma AbiHeader pubkey;
 
 import "./modules/TIP4_3/TIP4_3Collection.sol";
 import "./modules/access/OwnableInternal.sol";
-import "./Nft.sol";
+import "./NftTradeable.sol";
 
-contract Collection is TIP4_3Collection, OwnableInternal {
+contract CollectionTradeable is TIP4_3Collection, OwnableInternal {
+	 /** Errors **/
+    uint8 constant value_is_less_than_required = 104;
+	
 	/// _remainOnNft - the number of crystals that will remain after the entire mint
 	/// process is completed on the Nft contract
 	uint128 _remainOnNft;
+	/// _defaultRoyaltyFee
+	/// The default royalty fee for all Nfts
+	uint8 _defaultRoyaltyFee;
+	address _defaultTokenRoot;
 
 	constructor(
 		TvmCell codeNft,
 		TvmCell codeIndex,
 		TvmCell codeIndexBasis,
 		address owner,
-		uint128 remainOnNft
+		uint128 remainOnNft,
+		uint8 defulatRoyaltyFee,
+		address defaultTokenRoot
 	)
 		public
 		OwnableInternal(owner)
@@ -27,16 +36,32 @@ contract Collection is TIP4_3Collection, OwnableInternal {
 	{
 		tvm.accept();
 		_remainOnNft = remainOnNft;
+		_defaultRoyaltyFee = defulatRoyaltyFee;
+		_defaultTokenRoot = defaultTokenRoot;
 	}
 	
-	function _mintNft(address owner, string json, uint128 value, uint16 flag) internal virtual {
+	function mintNft(string[] jsons) public virtual onlyOwner {
+        require(
+			msg.value > _remainOnNft + (3 ton * jsons.length),
+			value_is_less_than_required
+		);
+		tvm.rawReserve(0, 4);
+
+        for ((string json) : jsons) {
+            _mintNft(owner(), json, _defaultRoyaltyFee, _defaultTokenRoot, 3 ton, 0);
+        }
+    }
+
+	function _mintNft(address owner, string json, uint8 royaltyFee, address tokenRoot, uint128 value, uint16 flag) internal virtual {
 		
 		uint256 id = uint256(_totalSupply);
 		_totalSupply++;
 
 		TvmCell codeNft = _buildNftCode(address(this));
 		TvmCell stateNft = _buildNftState(codeNft, id);
-		address nftAddr = new Nft{stateInit: stateNft, value: value, flag: flag}(
+		address nftAddr = new NftTradeable{stateInit: stateNft, value: value, flag: flag}(
+			royaltyFee,
+			tokenRoot,
 			owner,
 			msg.sender,
 			_remainOnNft,
@@ -53,8 +78,8 @@ contract Collection is TIP4_3Collection, OwnableInternal {
 		_remainOnNft = remainOnNft;
 	}
 
-	function _nftAddress(uint256 id) internal view returns (address nft) {
-		return _resolveNft(id);
+	function setDefaultRoyaltyFee(uint8 royaltyFee) external virtual onlyOwner {
+		_defaultRoyaltyFee = royaltyFee;
 	}
 
 	function _buildNftState(TvmCell code, uint256 id)
@@ -64,7 +89,7 @@ contract Collection is TIP4_3Collection, OwnableInternal {
 		override
 		returns (TvmCell)
 	{
-		return tvm.buildStateInit({contr: Nft, varInit: {_id: id}, code: code});
+		return tvm.buildStateInit({contr: NftTradeable, varInit: {_id: id}, code: code});
 	}
 
 	function resolveIndexCodeHash(address collection, address owner) public view returns (uint256 hash) {
