@@ -15,7 +15,7 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal {
 	/// _remainOnNft - the number of crystals that will remain after the entire mint
 	/// process is completed on the Nft contract
 	uint128 _remainOnNft;
-	/// _defaultRoyaltyFee
+
 	/// The default royalty fee for all Nfts
 	uint8 _defaultRoyaltyFee;
 	address _defaultTokenRoot;
@@ -39,6 +39,22 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal {
 		_defaultRoyaltyFee = defulatRoyaltyFee;
 		_defaultTokenRoot = defaultTokenRoot;
 	}
+
+	    /** Opens Sale */
+    /** Collection Can Only Call This if Owned By Author */
+    function openSale(uint8 salePrice) external onlyOwner {
+        for (uint256 i = 0; i < _totalSupply; i++) {
+			NftTradeable(_resolveNft(i)).openSale{flag: 64}(salePrice);
+		}
+    }
+
+    /** Closes Sale */
+    /** Collection Can only Call this if Owned By Author */
+    function closeSale() external onlyOwner {
+        for (uint256 i = 0; i < _totalSupply; i++) {
+			NftTradeable(_resolveNft(i)).closeSale{flag: 64}();
+		}
+    }
 	
 	function mintNft(string[] jsons) public virtual onlyOwner {
         require(

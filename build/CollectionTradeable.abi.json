@@ -18,6 +18,21 @@
 			]
 		},
 		{
+			"name": "openSale",
+			"inputs": [
+				{"name":"salePrice","type":"uint8"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "closeSale",
+			"inputs": [
+			],
+			"outputs": [
+			]
+		},
+		{
 			"name": "mintNft",
 			"inputs": [
 				{"name":"jsons","type":"string[]"}

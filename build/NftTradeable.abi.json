@@ -28,7 +28,7 @@
 			]
 		},
 		{
-			"name": "cancelSale",
+			"name": "closeSale",
 			"inputs": [
 			],
 			"outputs": [
@@ -172,14 +172,6 @@
 			]
 		},
 		{
-			"name": "_author",
-			"inputs": [
-			],
-			"outputs": [
-				{"name":"_author","type":"address"}
-			]
-		},
-		{
 			"name": "_tokenRoot",
 			"inputs": [
 			],
@@ -209,6 +201,14 @@
 			],
 			"outputs": [
 				{"name":"_isOpen","type":"bool"}
+			]
+		},
+		{
+			"name": "_author",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_author","type":"address"}
 			]
 		}
 	],
@@ -271,10 +271,10 @@
 		{"name":"_indexDestroyValue","type":"uint128"},
 		{"name":"_codeIndex","type":"cell"},
 		{"name":"_royaltyFee","type":"uint8"},
-		{"name":"_author","type":"address"},
 		{"name":"_tokenRoot","type":"address"},
 		{"name":"_tokenWallet","type":"address"},
 		{"name":"_salePrice","type":"uint256"},
-		{"name":"_isOpen","type":"bool"}
+		{"name":"_isOpen","type":"bool"},
+		{"name":"_author","type":"address"}
 	]
 }

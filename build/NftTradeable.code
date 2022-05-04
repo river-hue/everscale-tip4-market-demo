@@ -258,16 +258,18 @@ SETGLOB 10
 CALLREF {
 	CALL $_deployIndex_internal_macro$
 }
-.loc ../contracts/NftTradeable.sol, 56
+.loc ../contracts/NftTradeable.sol, 59
 ACCEPT
-.loc ../contracts/NftTradeable.sol, 57
-SETGLOB 20
-.loc ../contracts/NftTradeable.sol, 58
+.loc ../contracts/NftTradeable.sol, 60
+SETGLOB 24
+.loc ../contracts/NftTradeable.sol, 61
+SWAP
+SETGLOB 19
+.loc ../contracts/NftTradeable.sol, 62
 CALLREF {
 	CALL $_setTokenRoot_internal_macro$
 }
 .loc ../contracts/NftTradeable.sol, 0
-DROP
 CALLREF {
 	CALL $c7_to_c4$
 }
@@ -282,7 +284,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/NftTradeable.sol, 62
+.loc ../contracts/NftTradeable.sol, 72
 LDU 8
 ENDS
 .loc ../contracts/NftTradeable.sol, 0
@@ -296,19 +298,29 @@ CALLREF {
 THROW 0
 
 .macro openSale_internal_macro
-.loc ../contracts/modules/TIP4_1/TIP4_1Nft.sol, 315
+.loc ../contracts/NftTradeable.sol, 66
+GETGLOB 14
+GETGLOB 24
+SDEQ
+.loc ../contracts/NftTradeable.sol, 67
 GETGLOB 9
 GETGLOB 14
 SDEQ
-THROWIFNOT 103
-.loc ../contracts/NftTradeable.sol, 63
+SWAP
+GETGLOB 9
+GETGLOB 12
+SDEQ
+AND
+OR
+THROWIFNOT 401
+.loc ../contracts/NftTradeable.sol, 73
 TRUE
-SETGLOB 24
-.loc ../contracts/NftTradeable.sol, 64
 SETGLOB 23
+.loc ../contracts/NftTradeable.sol, 74
+SETGLOB 22
 .loc ../contracts/NftTradeable.sol, 0
 
-.macro cancelSale
+.macro closeSale
 DROP
 GETGLOB 6
 THROWIFNOT 76
@@ -317,11 +329,11 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/NftTradeable.sol, 67
+.loc ../contracts/NftTradeable.sol, 79
 ENDS
 .loc ../contracts/NftTradeable.sol, 0
 CALLREF {
-	CALL $cancelSale_internal_macro$
+	CALL $closeSale_internal_macro$
 }
 DROP
 CALLREF {
@@ -329,18 +341,28 @@ CALLREF {
 }
 THROW 0
 
-.macro cancelSale_internal_macro
-.loc ../contracts/modules/TIP4_1/TIP4_1Nft.sol, 315
+.macro closeSale_internal_macro
+.loc ../contracts/NftTradeable.sol, 66
+GETGLOB 14
+GETGLOB 24
+SDEQ
+.loc ../contracts/NftTradeable.sol, 67
 GETGLOB 9
 GETGLOB 14
 SDEQ
-THROWIFNOT 103
-.loc ../contracts/NftTradeable.sol, 68
+SWAP
+GETGLOB 9
+GETGLOB 12
+SDEQ
+AND
+OR
+THROWIFNOT 401
+.loc ../contracts/NftTradeable.sol, 80
 FALSE
-SETGLOB 24
-.loc ../contracts/NftTradeable.sol, 69
-PUSHINT 0
 SETGLOB 23
+.loc ../contracts/NftTradeable.sol, 81
+PUSHINT 0
+SETGLOB 22
 .loc ../contracts/NftTradeable.sol, 0
 
 .macro onAcceptTokensTransfer
@@ -352,7 +374,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/NftTradeable.sol, 72
+.loc ../contracts/NftTradeable.sol, 84
 OVER
 PUSHCONT {
 	LDREF
@@ -387,42 +409,42 @@ CALLREF {
 THROW 0
 
 .macro onAcceptTokensTransfer_internal_macro
-.loc ../contracts/NftTradeable.sol, 80
+.loc ../contracts/NftTradeable.sol, 92
 GETGLOB 9
-GETGLOB 22
+GETGLOB 21
 SDEQ
 THROWIFNOT 1021
-.loc ../contracts/NftTradeable.sol, 81
+.loc ../contracts/NftTradeable.sol, 93
 XCHG S2, S4
 CALLREF {
-	CALL $_checkPurchase_internal_macro$
+	CALL $_runPurchase_internal_macro$
 }
 .loc ../contracts/NftTradeable.sol, 0
 DROP2
 
-.globl	_checkPurchase_internal
-.type	_checkPurchase_internal, @function
-CALL $_checkPurchase_internal_macro$
+.globl	_runPurchase_internal
+.type	_runPurchase_internal, @function
+CALL $_runPurchase_internal_macro$
 
-.macro _checkPurchase_internal_macro
-.loc ../contracts/NftTradeable.sol, 92
-GETGLOB 24
-PUSH S3
+.macro _runPurchase_internal_macro
+.loc ../contracts/NftTradeable.sol, 104
 GETGLOB 23
+PUSH S3
+GETGLOB 22
 GEQ
 AND
 PUSHCONT {
-	.loc ../contracts/NftTradeable.sol, 94
+	.loc ../contracts/NftTradeable.sol, 106
 	PUSH S2
 	CALLREF {
 		CALL $_calcRoyalties_internal_macro$
 	}
-	.loc ../contracts/NftTradeable.sol, 97
+	.loc ../contracts/NftTradeable.sol, 109
 	PUSH S2
 	TRUE
 	PUSH S5
 	PUSHINT 0
-	GETGLOB 20
+	GETGLOB 24
 	ROLL 6
 	GETGLOB 9
 	FALSE
@@ -450,7 +472,7 @@ PUSHCONT {
 	ENDC
 	PUSHINT 64
 	SENDRAWMSG
-	.loc ../contracts/NftTradeable.sol, 107
+	.loc ../contracts/NftTradeable.sol, 119
 	OVER
 	TRUE
 	PUSH S4
@@ -483,7 +505,7 @@ PUSHCONT {
 	ENDC
 	PUSHINT 64
 	SENDRAWMSG
-	.loc ../contracts/NftTradeable.sol, 119
+	.loc ../contracts/NftTradeable.sol, 131
 	PUSHINT 100000000
 	PUSHREF {
 	}
@@ -501,18 +523,18 @@ PUSHCONT {
 	ROTREV
 	PUSHINT 267
 	DICTSETB
-	.loc ../contracts/NftTradeable.sol, 122
+	.loc ../contracts/NftTradeable.sol, 134
 	PUSH2 S4, S2
 	ROT
 	CALLREF {
 		CALL $transfer_internal_macro$
 	}
-	.loc ../contracts/NftTradeable.sol, 123
+	.loc ../contracts/NftTradeable.sol, 135
 	FALSE
-	SETGLOB 24
+	SETGLOB 23
 }
 PUSHCONT {
-	.loc ../contracts/NftTradeable.sol, 127
+	.loc ../contracts/NftTradeable.sol, 139
 	DUP
 	TRUE
 	PUSH S3
@@ -558,7 +580,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/NftTradeable.sol, 141
+.loc ../contracts/NftTradeable.sol, 153
 OVER
 PUSHCONT {
 	LDREF
@@ -607,7 +629,7 @@ THROW 0
 CALL $_calcRoyalties_internal_macro$
 
 .macro _calcRoyalties_internal_macro
-.loc ../contracts/NftTradeable.sol, 142
+.loc ../contracts/NftTradeable.sol, 154
 DUP
 GETGLOB 19
 MUL
@@ -620,7 +642,7 @@ UFITS 8
 MUL
 UFITS 8
 DIV
-.loc ../contracts/NftTradeable.sol, 143
+.loc ../contracts/NftTradeable.sol, 155
 TUCK
 SUB
 UFITS 128
@@ -635,7 +657,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/NftTradeable.sol, 147
+.loc ../contracts/NftTradeable.sol, 159
 LDU 8
 ENDS
 .loc ../contracts/NftTradeable.sol, 0
@@ -658,12 +680,12 @@ GETGLOB 9
 GETGLOB 14
 SDEQ
 THROWIFNOT 103
-.loc ../contracts/NftTradeable.sol, 148
+.loc ../contracts/NftTradeable.sol, 160
 GETGLOB 9
-GETGLOB 20
+GETGLOB 24
 SDEQ
 THROWIFNOT 400
-.loc ../contracts/NftTradeable.sol, 149
+.loc ../contracts/NftTradeable.sol, 161
 SETGLOB 19
 .loc ../contracts/NftTradeable.sol, 0
 
@@ -672,12 +694,12 @@ SETGLOB 19
 CALL $_setTokenRoot_internal_macro$
 
 .macro _setTokenRoot_internal_macro
-.loc ../contracts/NftTradeable.sol, 153
-SETGLOB 21
-.loc ../contracts/NftTradeable.sol, 154
+.loc ../contracts/NftTradeable.sol, 165
+SETGLOB 20
+.loc ../contracts/NftTradeable.sol, 166
 PUSHINT 100000000
 MYADDR
-GETGLOB 21
+GETGLOB 20
 TRUE
 NEWC
 STSLICECONST x6_
@@ -708,7 +730,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/NftTradeable.sol, 162
+.loc ../contracts/NftTradeable.sol, 174
 OVER
 PUSHCONT {
 	LDREF
@@ -733,15 +755,15 @@ THROW 0
 CALL $_setTokenWallet_internal_macro$
 
 .macro _setTokenWallet_internal_macro
-.loc ../contracts/NftTradeable.sol, 163
+.loc ../contracts/NftTradeable.sol, 175
 GETGLOB 9
-GETGLOB 21
+GETGLOB 20
 SDEQ
 THROWIFNOT 1020
-.loc ../contracts/NftTradeable.sol, 164
+.loc ../contracts/NftTradeable.sol, 176
 ACCEPT
-.loc ../contracts/NftTradeable.sol, 165
-SETGLOB 22
+.loc ../contracts/NftTradeable.sol, 177
+SETGLOB 21
 .loc ../contracts/NftTradeable.sol, 0
 
 .globl	_beforeTransfer_internal
@@ -749,7 +771,7 @@ SETGLOB 22
 CALL $_beforeTransfer_internal_macro$
 
 .macro _beforeTransfer_internal_macro
-.loc ../contracts/NftTradeable.sol, 173
+.loc ../contracts/NftTradeable.sol, 185
 DROP
 CALLREF {
 	CALL $_destructIndex_internal_macro$
@@ -762,7 +784,7 @@ DROP
 CALL $_afterTransfer_internal_macro$
 
 .macro _afterTransfer_internal_macro
-.loc ../contracts/NftTradeable.sol, 181
+.loc ../contracts/NftTradeable.sol, 193
 BLKDROP 3
 CALLREF {
 	CALL $_deployIndex_internal_macro$
@@ -774,7 +796,7 @@ CALLREF {
 CALL $_beforeChangeOwner_internal_macro$
 
 .macro _beforeChangeOwner_internal_macro
-.loc ../contracts/NftTradeable.sol, 190
+.loc ../contracts/NftTradeable.sol, 202
 DROP
 CALLREF {
 	CALL $_destructIndex_internal_macro$
@@ -787,7 +809,7 @@ DROP2
 CALL $_afterChangeOwner_internal_macro$
 
 .macro _afterChangeOwner_internal_macro
-.loc ../contracts/NftTradeable.sol, 199
+.loc ../contracts/NftTradeable.sol, 211
 BLKDROP 4
 CALLREF {
 	CALL $_deployIndex_internal_macro$
@@ -2505,12 +2527,12 @@ LDREF
 ENDS
 CTOS
 LDMSGADDR
+LDU 256
+LDI 1
 LDREF
 ENDS
 CTOS
 LDMSGADDR
-LDU 256
-LDI 1
 ENDS
 SETGLOB 24
 SETGLOB 23
@@ -2566,9 +2588,12 @@ PUSHCONT {
 	PUSHREFSLICE {
 		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
 	}
-	BLKPUSH 2, 0
+	DUP
 	PUSHINT 0
 	DUP
+	PUSHREFSLICE {
+		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
+	}
 	SETGLOB 24
 	SETGLOB 23
 	SETGLOB 22
@@ -2594,7 +2619,7 @@ PUSHCONT {
 	PUSHINT 0
 	SETGLOB 19
 	FALSE
-	SETGLOB 24
+	SETGLOB 23
 }
 IFREFELSE {
 	CALL $c4_to_c7$
@@ -2644,11 +2669,11 @@ STSLICE
 ROLLREV 4
 NEWC
 STSLICE
-ROLLREV 3
-NEWC
-STSLICE
 STU 256
 STI 1
+SWAP
+NEWC
+STSLICE
 STBREFR
 STBREFR
 STBREFR
@@ -2797,33 +2822,13 @@ PUSHCONT {
 IF
 THROW 0
 
-.macro _author
-DROP
-ENDS
-CALLREF {
-	CALL $c4_to_c7$
-}
-GETGLOB 20
-OVER
-PUSHCONT {
-	PUSHSLICE xc00000000000000000000000009a41647c
-	NEWC
-	STSLICE
-	STSLICE
-	ENDC
-	PUSHINT 0
-	SENDRAWMSG
-}
-IF
-THROW 0
-
 .macro _tokenRoot
 DROP
 ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 21
+GETGLOB 20
 OVER
 PUSHCONT {
 	PUSHSLICE xc00000000000000000000000009e88af1c
@@ -2843,7 +2848,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 22
+GETGLOB 21
 OVER
 PUSHCONT {
 	PUSHSLICE xc00000000000000000000000008bc1fe2f
@@ -2863,7 +2868,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 23
+GETGLOB 22
 OVER
 PUSHCONT {
 	PUSHSLICE xc00000000000000000000000009e379923
@@ -2883,7 +2888,7 @@ ENDS
 CALLREF {
 	CALL $c4_to_c7$
 }
-GETGLOB 24
+GETGLOB 23
 OVER
 PUSHCONT {
 	PUSHSLICE xc0000000000000000000000000a50083e0
@@ -2897,9 +2902,29 @@ PUSHCONT {
 IF
 THROW 0
 
+.macro _author
+DROP
+ENDS
+CALLREF {
+	CALL $c4_to_c7$
+}
+GETGLOB 24
+OVER
+PUSHCONT {
+	PUSHSLICE xc00000000000000000000000009a41647c
+	NEWC
+	STSLICE
+	STSLICE
+	ENDC
+	PUSHINT 0
+	SENDRAWMSG
+}
+IF
+THROW 0
+
 .macro public_function_selector
 DUP
-PUSHINT 738805589
+PUSHINT 839183401
 LEQ
 IFJMPREF {
 	DUP
@@ -2990,7 +3015,7 @@ IFJMPREF {
 		}
 	}
 	DUP
-	PUSHINT 738805589
+	PUSHINT 839183401
 	LEQ
 	IFJMPREF {
 		DUP
@@ -3012,10 +3037,10 @@ IFJMPREF {
 			CALL $_isOpen$
 		}
 		DUP
-		PUSHINT 738805589
+		PUSHINT 839183401
 		EQUAL
 		IFJMPREF {
-			CALL $cancelSale$
+			CALL $supportsInterface$
 		}
 	}
 }
@@ -3028,12 +3053,6 @@ IFJMPREF {
 	LEQ
 	IFJMPREF {
 		DUP
-		PUSHINT 839183401
-		EQUAL
-		IFJMPREF {
-			CALL $supportsInterface$
-		}
-		DUP
 		PUSHINT 968084551
 		EQUAL
 		IFJMPREF {
@@ -3044,6 +3063,12 @@ IFJMPREF {
 		EQUAL
 		IFJMPREF {
 			CALL $resolveIndex$
+		}
+		DUP
+		PUSHINT 1799292532
+		EQUAL
+		IFJMPREF {
+			CALL $closeSale$
 		}
 		DUP
 		PUSHINT 1893244873

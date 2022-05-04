@@ -18,19 +18,22 @@ contract NftTradeable is IAcceptTokensTransferCallback, TIP4_1Nft, TIP4_2Nft, TI
 
     /** Errors */
     uint256 constant sender_is_not_author = 400;
-    uint256 constant seller_is_not_open = 401;
+    uint256 constant sender_is_not_collection_or_manager = 401;
+    uint256 constant sale_is_not_open = 501;
 
 	/** Royalties */
-    uint8 constant ROYALTY_DECIMALS = 2;
+    uint8 public constant ROYALTY_FEE_DECIMALS = 2;
 	uint8 public _royaltyFee = 0;
-	address public  _author;
 
     /** Sales can be done in Different Tokens and SalePrices */
 	address public _tokenRoot;
     address public _tokenWallet;
 	uint256 public _salePrice;
-
     bool public _isOpen = false;
+
+    /** ROLES */
+    /* Author: Is Sent all Royalties, has Initial Control Over RoyaltyFee Before Sale */
+	address public  _author;
 
     constructor(
         uint8 royaltyFee,
@@ -55,16 +58,25 @@ contract NftTradeable is IAcceptTokensTransferCallback, TIP4_1Nft, TIP4_2Nft, TI
     ) public {
         tvm.accept();
         _author = owner;
+        _royaltyFee = royaltyFee;
         _setTokenRoot(tokenRoot);
     }
 
+    modifier onlyManagerOrMaybeCollection {
+        bool isAuthor = _manager == _author;
+        require(msg.sender == _manager || (isAuthor && msg.sender == _collection), sender_is_not_collection_or_manager);
+        _;
+    }
     /** Opens Sale */
-    function openSale(uint8 salePrice) external onlyManager {
+    /** Collection Can Only Call This if Owned By Author */
+    function openSale(uint8 salePrice) external onlyManagerOrMaybeCollection {
         _isOpen = true;
         _salePrice = salePrice;
     }
 
-    function cancelSale() external onlyManager {
+    /** Closes Sale */
+    /** Collection Can only Call this if Owned By Author */
+    function closeSale() external onlyManagerOrMaybeCollection {
         _isOpen = false;
         _salePrice = 0;
     }
@@ -78,10 +90,10 @@ contract NftTradeable is IAcceptTokensTransferCallback, TIP4_1Nft, TIP4_2Nft, TI
         TvmCell payload
     ) override external {
         require(msg.sender == _tokenWallet, TokenErrors.WRONG_WALLET_OWNER);
-        _checkPurchase(sender, amount, remainingGasTo, payload);
+        _runPurchase(sender, amount, remainingGasTo, payload);
     }
 
-    function _checkPurchase(
+    function _runPurchase(
         address sender,
         uint128 amount,
         address remainingGasTo,
@@ -139,7 +151,7 @@ contract NftTradeable is IAcceptTokensTransferCallback, TIP4_1Nft, TIP4_2Nft, TI
     // TODO: Prove overflows are handled
     // TODO: Seperate this into a hook
     function _calcRoyalties(uint128 amount) view public returns (uint128 toAuthor, uint128 toSeller) {
-        toAuthor = (amount * _royaltyFee)/(100 * (10**ROYALTY_DECIMALS));
+        toAuthor = (amount * _royaltyFee)/(100 * (10**ROYALTY_FEE_DECIMALS));
         toSeller = amount - toAuthor;
         return (toAuthor, toSeller);
     }
