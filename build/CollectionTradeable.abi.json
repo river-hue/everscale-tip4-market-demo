@@ -11,7 +11,7 @@
 				{"name":"codeIndexBasis","type":"cell"},
 				{"name":"owner","type":"address"},
 				{"name":"remainOnNft","type":"uint128"},
-				{"name":"defulatRoyaltyFee","type":"uint8"},
+				{"name":"defaultRoyaltyFee","type":"uint8"},
 				{"name":"defaultTokenRoot","type":"address"}
 			],
 			"outputs": [
@@ -173,9 +173,18 @@
 			"outputs": [
 				{"name":"value0","type":"bool"}
 			]
+		},
+		{
+			"name": "_randomNonce",
+			"inputs": [
+			],
+			"outputs": [
+				{"name":"_randomNonce","type":"uint256"}
+			]
 		}
 	],
 	"data": [
+		{"key":1,"name":"_randomNonce","type":"uint256"}
 	],
 	"events": [
 		{
@@ -224,6 +233,7 @@
 		{"name":"_indexDestroyValue","type":"uint128"},
 		{"name":"_deployIndexBasisValue","type":"uint128"},
 		{"name":"_owner","type":"address"},
+		{"name":"_randomNonce","type":"uint256"},
 		{"name":"_remainOnNft","type":"uint128"},
 		{"name":"_defaultRoyaltyFee","type":"uint8"},
 		{"name":"_defaultTokenRoot","type":"address"}

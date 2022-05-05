@@ -7,8 +7,10 @@ pragma AbiHeader pubkey;
 import "./modules/TIP4_3/TIP4_3Collection.sol";
 import "./modules/access/OwnableInternal.sol";
 import "./NftTradeable.sol";
+import './modules/RandomNonce.sol';
 
-contract CollectionTradeable is TIP4_3Collection, OwnableInternal {
+
+contract CollectionTradeable is TIP4_3Collection, OwnableInternal, RandomNonce {
 	 /** Errors **/
     uint8 constant value_is_less_than_required = 104;
 	
@@ -26,7 +28,7 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal {
 		TvmCell codeIndexBasis,
 		address owner,
 		uint128 remainOnNft,
-		uint8 defulatRoyaltyFee,
+		uint8 defaultRoyaltyFee,
 		address defaultTokenRoot
 	)
 		public
@@ -36,7 +38,7 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal {
 	{
 		tvm.accept();
 		_remainOnNft = remainOnNft;
-		_defaultRoyaltyFee = defulatRoyaltyFee;
+		_defaultRoyaltyFee = defaultRoyaltyFee;
 		_defaultTokenRoot = defaultTokenRoot;
 	}
 
