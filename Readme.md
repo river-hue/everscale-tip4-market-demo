@@ -1,5 +1,7 @@
 # Everscale Demo NFT Market (TIP4)
 
+* Design Notes: See [here](docs/index.md) for Design Docs
+
 ## Development
 
 [DevContainer](https://code.visualstudio.com/docs/remote/containers) in [VsCode](https://code.visualstudio.com/):

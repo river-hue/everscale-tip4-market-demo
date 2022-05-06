@@ -6,156 +6,54 @@
 		{
 			"name": "constructor",
 			"inputs": [
-				{"name":"tokenRoot","type":"address"},
-				{"name":"minNftTokenPrice","type":"uint256"},
 				{"name":"codeNft","type":"cell"},
 				{"name":"codeIndex","type":"cell"},
 				{"name":"codeIndexBasis","type":"cell"},
 				{"name":"owner","type":"address"},
-				{"name":"remainOnNft","type":"uint128"}
+				{"name":"remainOnNft","type":"uint128"},
+				{"name":"defaultRoyaltyFee","type":"uint8"},
+				{"name":"defaultTokenRoot","type":"address"}
 			],
 			"outputs": [
 			]
 		},
 		{
-			"name": "tokenRoot",
+			"name": "openSale",
 			"inputs": [
-				{"name":"answerId","type":"uint32"}
+				{"name":"salePrice","type":"uint256"}
 			],
 			"outputs": [
-				{"name":"value0","type":"address"}
 			]
 		},
 		{
-			"name": "minNftTokenPrice",
+			"name": "closeSale",
 			"inputs": [
-				{"name":"answerId","type":"uint32"}
 			],
 			"outputs": [
-				{"name":"value0","type":"uint256"}
-			]
-		},
-		{
-			"name": "purchaseCount",
-			"inputs": [
-				{"name":"answerId","type":"uint32"}
-			],
-			"outputs": [
-				{"name":"value0","type":"uint256"}
-			]
-		},
-		{
-			"name": "tokenWallet",
-			"inputs": [
-				{"name":"answerId","type":"uint32"}
-			],
-			"outputs": [
-				{"name":"value0","type":"address"}
 			]
 		},
 		{
 			"name": "mintNft",
 			"inputs": [
-				{"name":"json","type":"string"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "batchMintNft",
-			"inputs": [
 				{"name":"jsons","type":"string[]"}
 			],
 			"outputs": [
-			]
-		},
-		{
-			"name": "setTokenRoot",
-			"inputs": [
-				{"name":"newTokenRoot","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setTokenWallet",
-			"inputs": [
-				{"name":"newTokenWallet","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setMinNftTokenPrice",
-			"inputs": [
-				{"name":"amount","type":"uint256"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "onAcceptTokensTransfer",
-			"inputs": [
-				{"name":"tokenRoot","type":"address"},
-				{"name":"amount","type":"uint128"},
-				{"name":"sender","type":"address"},
-				{"name":"senderWallet","type":"address"},
-				{"name":"remainingGasTo","type":"address"},
-				{"name":"payload","type":"cell"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "transfer",
-			"inputs": [
-				{"name":"amount","type":"uint128"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "transferEver",
-			"inputs": [
-				{"name":"value","type":"uint128"},
-				{"name":"flag","type":"uint16"},
-				{"name":"bounce","type":"bool"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "transferNft",
-			"inputs": [
-				{"name":"newOwner","type":"address"},
-				{"name":"remainingGasTo","type":"address"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "batchTransferNft",
-			"inputs": [
-				{"name":"newOwner","type":"address"},
-				{"name":"remainingGasTo","type":"address"},
-				{"name":"amount","type":"uint256"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "_serializeNftPurchase",
-			"inputs": [
-				{"name":"recipient","type":"address"}
-			],
-			"outputs": [
-				{"name":"payload","type":"cell"}
+				{"name":"startId","type":"uint256"},
+				{"name":"endId","type":"uint256"}
 			]
 		},
 		{
 			"name": "setRemainOnNft",
 			"inputs": [
 				{"name":"remainOnNft","type":"uint128"}
+			],
+			"outputs": [
+			]
+		},
+		{
+			"name": "setDefaultRoyaltyFee",
+			"inputs": [
+				{"name":"royaltyFee","type":"uint8"}
 			],
 			"outputs": [
 			]
@@ -337,11 +235,9 @@
 		{"name":"_indexDestroyValue","type":"uint128"},
 		{"name":"_deployIndexBasisValue","type":"uint128"},
 		{"name":"_owner","type":"address"},
-		{"name":"_remainOnNft","type":"uint128"},
 		{"name":"_randomNonce","type":"uint256"},
-		{"name":"_tokenWallet","type":"address"},
-		{"name":"_tokenRoot","type":"address"},
-		{"name":"_minNftTokenPrice","type":"uint256"},
-		{"name":"_purchaseCount","type":"uint256"}
+		{"name":"_remainOnNft","type":"uint128"},
+		{"name":"_defaultRoyaltyFee","type":"uint8"},
+		{"name":"_defaultTokenRoot","type":"address"}
 	]
 }

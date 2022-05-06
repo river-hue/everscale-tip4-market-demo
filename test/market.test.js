@@ -1,11 +1,11 @@
 // @ts-check
 const { expect } = require("chai");
-const { deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, LockLift, Account, Contract, getTokenWallet, logContract, getTotalSupply, getNftById, getPurchaseCount, getRandomNonce } = require("./utils");
+const { locklift,deployAccount, deployTokenRoot, deployMarket, deployTokenWallet, LockLift, Account, Contract, getTokenWallet, logContract, getTotalSupply, getNftById, getPurchaseCount, getRandomNonce } = require("./utils");
 
-/** @type {LockLift} */
-var locklift = global.locklift;
+// /** @type {LockLift} */
+// var locklift = global.locklift;
 
-describe('Test Market contract', async function () {
+describe.skip('Test Market contract', async function () {
   /** @type {Contract} */
   let market;
   /** @type {Contract} */
