@@ -42,9 +42,9 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal, RandomNonce {
 		_defaultTokenRoot = defaultTokenRoot;
 	}
 
-	    /** Opens Sale */
+	/** Opens Sale */
     /** Collection Can Only Call This if Owned By Author */
-    function openSale(uint8 salePrice) external onlyOwner {
+    function openSale(uint256 salePrice) external onlyOwner {
         for (uint256 i = 0; i < _totalSupply; i++) {
 			NftTradeable(_resolveNft(i)).openSale{flag: 64}(salePrice);
 		}
@@ -58,16 +58,21 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal, RandomNonce {
 		}
     }
 	
-	function mintNft(string[] jsons) public virtual onlyOwner {
+	function mintNft(string[] jsons) public virtual onlyOwner returns (uint startId, uint endId) {
         require(
 			msg.value > _remainOnNft + (3 ton * jsons.length),
 			value_is_less_than_required
 		);
 		tvm.rawReserve(0, 4);
 
+		startId = _totalSupply;
+		endId = startId + jsons.length;
+
         for ((string json) : jsons) {
             _mintNft(owner(), json, _defaultRoyaltyFee, _defaultTokenRoot, 3 ton, 0);
         }
+
+		return (startId, endId);
     }
 
 	function _mintNft(address owner, string json, uint8 royaltyFee, address tokenRoot, uint128 value, uint16 flag) internal virtual {

@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { Account, Contract, locklift, getRandomNonce } from "./locklift";
 
-export async function deployTokenRoot(account: Account, config: { name: string; symbol: string; decimals: string; initialSupply?: string; deployWalletValue?: string; }): Promise<Contract> {
+export async function deploy(account: Account, config: { name: string; symbol: string; decimals: string; initialSupply?: string; deployWalletValue?: string; }): Promise<Contract> {
   let { name, symbol, decimals, initialSupply, deployWalletValue } = config;
   decimals = decimals || '4';
   initialSupply = initialSupply || new BigNumber(10000000).shiftedBy(2).toFixed();

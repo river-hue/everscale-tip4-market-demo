@@ -1,6 +1,6 @@
 import { Account, Contract, locklift } from "./locklift";
 
-export async function deployTokenWallet(account: Account, tokenRoot: Contract): Promise<Contract> {
+export async function deploy(account: Account, tokenRoot: Contract): Promise<Contract> {
 
   let walletAddr = await tokenRoot.call({
     method: 'walletOf',

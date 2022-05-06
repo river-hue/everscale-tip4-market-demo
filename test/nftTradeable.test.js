@@ -1,7 +1,7 @@
 // @ts-check
 
 const { expect } = require("chai");
-const { locklift, Contract, Account, deployAccount, deployTokenRoot, deployTokenWallet, logContract,  getRandomNonce, deployCollectionTradeable, mintNft } = require("./utils");
+const { locklift, Contract, Account, deployAccount, deployTokenRoot, deployTokenWallet, logContract, getRandomNonce, deployCollectionTradeable, mintNft, TIP4 } = require("./utils");
 
 describe('Test NftTradeable contract', async function () {
     /** @type {Contract} */
@@ -32,7 +32,7 @@ describe('Test NftTradeable contract', async function () {
             collectionOwner = await deployAccount(user1, 100)
             tokenRoot = await deployTokenRoot(collectionOwner, { name: 'Test Token', symbol: 'TST', decimals: '4' })
             collection = await deployCollectionTradeable(collectionOwner, tokenRoot, { remainOnNft: 0.3, defaultRoyaltyFee: 100 })
-            nft = await mintNft(collectionOwner, collection, [{ id:0, name: 'sample', description: 'sample', preview: {}, }])
+            nft = await mintNft(collectionOwner, collection, [TIP4.DEFAULT])
             return expect(collection.address).to.be.a('string')
                 .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
         })
@@ -44,6 +44,6 @@ describe('Test NftTradeable contract', async function () {
                 .and.satisfy(s => s.startsWith('0:'), 'Bad future address');
         })
     })
-    describe('openSale()', function() {})
-    describe('closeSale()', function() {})
+    describe('openSale()', function () { })
+    describe('closeSale()', function () { })
 })

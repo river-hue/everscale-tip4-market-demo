@@ -22,7 +22,7 @@
 		{
 			"name": "openSale",
 			"inputs": [
-				{"name":"salePrice","type":"uint8"}
+				{"name":"salePrice","type":"uint256"}
 			],
 			"outputs": [
 			]

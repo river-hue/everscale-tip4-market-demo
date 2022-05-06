@@ -69,7 +69,7 @@ contract NftTradeable is IAcceptTokensTransferCallback, TIP4_1Nft, TIP4_2Nft, TI
     }
     /** Opens Sale */
     /** Collection Can Only Call This if Owned By Author */
-    function openSale(uint8 salePrice) external onlyManagerOrMaybeCollection {
+    function openSale(uint256 salePrice) external onlyManagerOrMaybeCollection {
         _isOpen = true;
         _salePrice = salePrice;
     }

@@ -52,6 +52,15 @@ export namespace TIP4 {
     }[];
     external_url: string;
   };
+
+  export const DEFAULT = { 
+    id: 0, 
+    name: '', 
+    type: '',
+    description: '', 
+    preview: { source: '', mimetype: '' }, 
+    files: [], 
+    external_url: '' }
 }
 
 export interface LockLift {

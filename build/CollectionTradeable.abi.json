@@ -20,7 +20,7 @@
 		{
 			"name": "openSale",
 			"inputs": [
-				{"name":"salePrice","type":"uint8"}
+				{"name":"salePrice","type":"uint256"}
 			],
 			"outputs": [
 			]
@@ -38,6 +38,8 @@
 				{"name":"jsons","type":"string[]"}
 			],
 			"outputs": [
+				{"name":"startId","type":"uint256"},
+				{"name":"endId","type":"uint256"}
 			]
 		},
 		{

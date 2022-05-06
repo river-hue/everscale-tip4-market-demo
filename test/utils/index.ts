@@ -1,6 +1,6 @@
 
 export * from './locklift'
-export * from './collectionTradeable'
-// export * from './market'
-export * from './tokenRoot'
-export * from './tokenWallet'
+export * as CollectionTradeable from './collectionTradeable'
+export * as NftTradeable from './nftTradeable'
+export * as TokenRoot from './tokenRoot'
+export * as TokenWallet from './tokenWallet'
