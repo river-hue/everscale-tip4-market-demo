@@ -10,9 +10,7 @@
 				{"name":"codeIndex","type":"cell"},
 				{"name":"codeIndexBasis","type":"cell"},
 				{"name":"owner","type":"address"},
-				{"name":"remainOnNft","type":"uint128"},
-				{"name":"defaultRoyaltyFee","type":"uint8"},
-				{"name":"defaultTokenRoot","type":"address"}
+				{"name":"remainOnNft","type":"uint128"}
 			],
 			"outputs": [
 			]
@@ -35,7 +33,9 @@
 		{
 			"name": "mintNft",
 			"inputs": [
-				{"name":"jsons","type":"string[]"}
+				{"name":"jsons","type":"string[]"},
+				{"name":"royaltyFee","type":"uint8"},
+				{"name":"tokenRoot","type":"address"}
 			],
 			"outputs": [
 				{"name":"startId","type":"uint256"},
@@ -46,14 +46,6 @@
 			"name": "setRemainOnNft",
 			"inputs": [
 				{"name":"remainOnNft","type":"uint128"}
-			],
-			"outputs": [
-			]
-		},
-		{
-			"name": "setDefaultRoyaltyFee",
-			"inputs": [
-				{"name":"royaltyFee","type":"uint8"}
 			],
 			"outputs": [
 			]
@@ -236,8 +228,6 @@
 		{"name":"_deployIndexBasisValue","type":"uint128"},
 		{"name":"_owner","type":"address"},
 		{"name":"_randomNonce","type":"uint256"},
-		{"name":"_remainOnNft","type":"uint128"},
-		{"name":"_defaultRoyaltyFee","type":"uint8"},
-		{"name":"_defaultTokenRoot","type":"address"}
+		{"name":"_remainOnNft","type":"uint128"}
 	]
 }

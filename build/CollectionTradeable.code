@@ -26,13 +26,8 @@ PUSHCONT {
 IFELSE
 LDMSGADDR
 LDU 128
-LDU 8
-LDREF
 ENDS
-CTOS
-LDMSGADDR
-ENDS
-ROLL 6
+ROLL 4
 .loc ../contracts/modules/TIP4_1/TIP4_1Collection.sol, 29
 ACCEPT
 .loc ../contracts/modules/TIP4_1/TIP4_1Collection.sol, 31
@@ -63,7 +58,7 @@ PUSHINT 32
 DICTUSETB
 SETGLOB 10
 .loc ../contracts/modules/TIP4_1/TIP4_1Collection.sol, 0
-BLKSWAP 2, 4
+SWAP2
 .loc ../contracts/modules/TIP4_3/TIP4_3Collection.sol, 41
 OVER
 HASHCU
@@ -102,21 +97,15 @@ CALLREF {
 	CALL $_deployIndexBasis_internal_macro$
 }
 .loc ../contracts/modules/TIP4_3/TIP4_3Collection.sol, 0
-ROLL 3
+SWAP
 .loc ../contracts/modules/access/OwnableInternal.sol, 12
 CALLREF {
 	CALL $_transferOwnership_internal_macro$
 }
-.loc ../contracts/CollectionTradeable.sol, 39
+.loc ../contracts/CollectionTradeable.sol, 33
 ACCEPT
-.loc ../contracts/CollectionTradeable.sol, 40
-ROT
+.loc ../contracts/CollectionTradeable.sol, 34
 SETGLOB 20
-.loc ../contracts/CollectionTradeable.sol, 41
-SWAP
-SETGLOB 21
-.loc ../contracts/CollectionTradeable.sol, 42
-SETGLOB 22
 .loc ../contracts/CollectionTradeable.sol, 0
 CALLREF {
 	CALL $c7_to_c4$
@@ -132,7 +121,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/CollectionTradeable.sol, 47
+.loc ../contracts/CollectionTradeable.sol, 40
 OVER
 PUSHCONT {
 	LDREF
@@ -165,7 +154,7 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/CollectionTradeable.sol, 48
+.loc ../contracts/CollectionTradeable.sol, 41
 PUSHINT 0
 PUSHCONT {
 	DUP
@@ -173,7 +162,7 @@ PUSHCONT {
 	LESS
 }
 PUSHCONT {
-	.loc ../contracts/CollectionTradeable.sol, 49
+	.loc ../contracts/CollectionTradeable.sol, 42
 	DUP2
 	CALLREF {
 		CALL $_resolveNft_internal_macro$
@@ -181,13 +170,17 @@ PUSHCONT {
 	NEWC
 	STSLICECONST x62_
 	STSLICE
-	PUSHSLICE x3989680000000000000000000000000000ad1d4689_
+	PUSHSLICE x411e1a300000000000000000000000000003_
 	STSLICER
+	SWAP
+	NEWC
+	STSLICECONST x568ea344
 	STU 256
+	STBREFR
 	ENDC
-	PUSHINT 64
+	PUSHINT 0
 	SENDRAWMSG
-	.loc ../contracts/CollectionTradeable.sol, 48
+	.loc ../contracts/CollectionTradeable.sol, 41
 	INC
 	.loc ../contracts/CollectionTradeable.sol, 0
 }
@@ -204,7 +197,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/CollectionTradeable.sol, 55
+.loc ../contracts/CollectionTradeable.sol, 49
 ENDS
 .loc ../contracts/CollectionTradeable.sol, 0
 CALLREF {
@@ -229,7 +222,7 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/CollectionTradeable.sol, 56
+.loc ../contracts/CollectionTradeable.sol, 50
 PUSHINT 0
 PUSHCONT {
 	DUP
@@ -237,7 +230,7 @@ PUSHCONT {
 	LESS
 }
 PUSHCONT {
-	.loc ../contracts/CollectionTradeable.sol, 57
+	.loc ../contracts/CollectionTradeable.sol, 51
 	DUP
 	CALLREF {
 		CALL $_resolveNft_internal_macro$
@@ -245,12 +238,12 @@ PUSHCONT {
 	NEWC
 	STSLICECONST x62_
 	STSLICE
-	PUSHSLICE x3989680000000000000000000000000000d67e0ce9_
+	PUSHSLICE x411e1a300000000000000000000000000000d67e0ce9_
 	STSLICER
 	ENDC
-	PUSHINT 64
+	PUSHINT 0
 	SENDRAWMSG
-	.loc ../contracts/CollectionTradeable.sol, 56
+	.loc ../contracts/CollectionTradeable.sol, 50
 	INC
 	.loc ../contracts/CollectionTradeable.sol, 0
 }
@@ -267,12 +260,29 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/CollectionTradeable.sol, 61
-LDU 32
-LDDICT
-ROTREV
-PAIR
-SWAP
+.loc ../contracts/CollectionTradeable.sol, 55
+OVER
+PUSHCONT {
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+	LDU 8
+	LDREF
+	ENDS
+	CTOS
+}
+PUSHCONT {
+	LDU 32
+	LDDICT
+	ROTREV
+	PAIR
+	SWAP
+	LDU 8
+}
+IFELSE
+LDMSGADDR
 ENDS
 .loc ../contracts/CollectionTradeable.sol, 0
 CALLREF {
@@ -293,7 +303,7 @@ PUSHCONT {
 	STUR 98
 	XCHG S2
 	NEWC
-	STSLICECONST xf9c9e11c
+	STSLICECONST x83867b5d
 	STU 256
 	STU 256
 	STBREFR
@@ -328,30 +338,30 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/CollectionTradeable.sol, 62
+.loc ../contracts/CollectionTradeable.sol, 56
 DEPTH
 ADDCONST -2
 PICK
 GETGLOB 20
 PUSHINT 3000000000
-PUSH S3
+PUSH S5
 FIRST
 MUL
 ADD
 GREATER
 THROWIFNOT 104
-.loc ../contracts/CollectionTradeable.sol, 66
+.loc ../contracts/CollectionTradeable.sol, 60
 PUSHINT 0
 PUSHINT 4
 RAWRESERVE
-.loc ../contracts/CollectionTradeable.sol, 68
+.loc ../contracts/CollectionTradeable.sol, 62
 GETGLOB 12
-.loc ../contracts/CollectionTradeable.sol, 69
-PUSH2 S0, S1
+.loc ../contracts/CollectionTradeable.sol, 63
+PUSH2 S0, S3
 FIRST
 ADD
-.loc ../contracts/CollectionTradeable.sol, 71
-ROT
+.loc ../contracts/CollectionTradeable.sol, 65
+ROLL 4
 SECOND
 PUSHINT 0
 NULL
@@ -367,13 +377,11 @@ PUSHCONT {
 	NOT
 }
 PUSHCONT {
-	.loc ../contracts/CollectionTradeable.sol, 72
+	.loc ../contracts/CollectionTradeable.sol, 66
 	CALLREF {
 		CALL $owner_internal_macro$
 	}
-	OVER
-	GETGLOB 21
-	GETGLOB 22
+	PUSH3 S1, S7, S6
 	PUSHINT 3000000000
 	PUSHINT 0
 	CALLREF {
@@ -386,6 +394,8 @@ PUSHCONT {
 }
 WHILE
 BLKDROP 3
+.loc ../contracts/CollectionTradeable.sol, 69
+BLKDROP2 2, 2
 .loc ../contracts/CollectionTradeable.sol, 0
 
 .globl	_mintNft_internal
@@ -393,24 +403,24 @@ BLKDROP 3
 CALL $_mintNft_internal_macro$
 
 .macro _mintNft_internal_macro
-.loc ../contracts/CollectionTradeable.sol, 80
+.loc ../contracts/CollectionTradeable.sol, 74
 GETGLOB 12
 DUP
-.loc ../contracts/CollectionTradeable.sol, 81
+.loc ../contracts/CollectionTradeable.sol, 75
 INC
 UFITS 128
 SETGLOB 12
-.loc ../contracts/CollectionTradeable.sol, 83
+.loc ../contracts/CollectionTradeable.sol, 77
 MYADDR
 CALLREF {
 	CALL $_buildNftCode_internal_macro$
 }
-.loc ../contracts/CollectionTradeable.sol, 84
+.loc ../contracts/CollectionTradeable.sol, 78
 OVER
 CALLREF {
 	CALL $_buildNftState_internal_macro$
 }
-.loc ../contracts/CollectionTradeable.sol, 85
+.loc ../contracts/CollectionTradeable.sol, 79
 GETGLOB 13
 GETGLOB 16
 GETGLOB 15
@@ -485,7 +495,7 @@ STBREFR
 ENDC
 ROLL 3
 SENDRAWMSG
-.loc ../contracts/CollectionTradeable.sol, 97
+.loc ../contracts/CollectionTradeable.sol, 91
 GETGLOB 9
 DUP
 BLKSWAP 3, 2
@@ -525,7 +535,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/CollectionTradeable.sol, 100
+.loc ../contracts/CollectionTradeable.sol, 94
 OVER
 PUSHCONT {
 	LDREF
@@ -558,47 +568,8 @@ DEPTH
 ADDCONST -2
 PICK
 THROWIFNOT 101
-.loc ../contracts/CollectionTradeable.sol, 101
+.loc ../contracts/CollectionTradeable.sol, 95
 SETGLOB 20
-.loc ../contracts/CollectionTradeable.sol, 0
-
-.macro setDefaultRoyaltyFee
-DROP
-GETGLOB 6
-THROWIFNOT 76
-GETGLOB 2
-ISNULL
-IFREF {
-	CALL $c4_to_c7$
-}
-.loc ../contracts/CollectionTradeable.sol, 104
-LDU 8
-ENDS
-.loc ../contracts/CollectionTradeable.sol, 0
-CALLREF {
-	CALL $setDefaultRoyaltyFee_internal_macro$
-}
-DROP
-CALLREF {
-	CALL $c7_to_c4$
-}
-THROW 0
-
-.macro setDefaultRoyaltyFee_internal_macro
-.loc ../contracts/modules/access/OwnableInternal.sol, 32
-CALLREF {
-	CALL $owner_internal_macro$
-}
-GETGLOB 9
-SDEQ
-THROWIFNOT 100
-.loc ../contracts/modules/access/OwnableInternal.sol, 33
-DEPTH
-ADDCONST -2
-PICK
-THROWIFNOT 101
-.loc ../contracts/CollectionTradeable.sol, 105
-SETGLOB 21
 .loc ../contracts/CollectionTradeable.sol, 0
 
 .globl	_buildNftState_internal
@@ -606,7 +577,7 @@ SETGLOB 21
 CALL $_buildNftState_internal_macro$
 
 .macro _buildNftState_internal_macro
-.loc ../contracts/CollectionTradeable.sol, 115
+.loc ../contracts/CollectionTradeable.sol, 106
 PUSHINT 0
 NEWC
 STU 256
@@ -642,7 +613,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/CollectionTradeable.sol, 118
+.loc ../contracts/CollectionTradeable.sol, 109
 OVER
 PUSHCONT {
 	LDREF
@@ -692,11 +663,11 @@ THROW 0
 CALL $resolveIndexCodeHash_internal_macro$
 
 .macro resolveIndexCodeHash_internal_macro
-.loc ../contracts/CollectionTradeable.sol, 119
+.loc ../contracts/CollectionTradeable.sol, 110
 CALLREF {
 	CALL $_buildIndexCode_internal_macro$
 }
-.loc ../contracts/CollectionTradeable.sol, 120
+.loc ../contracts/CollectionTradeable.sol, 111
 HASHCU
 .loc ../contracts/CollectionTradeable.sol, 0
 
@@ -2408,11 +2379,7 @@ ENDS
 CTOS
 LDU 256
 LDU 128
-LDU 8
-LDMSGADDR
 ENDS
-SETGLOB 22
-SETGLOB 21
 SETGLOB 20
 SETGLOB 19
 SETGLOB 18
@@ -2461,12 +2428,6 @@ PUSHCONT {
 	}
 	IFELSE
 	PUSHINT 0
-	DUP
-	PUSHREFSLICE {
-		.blob x8000000000000000000000000000000000000000000000000000000000000000001_
-	}
-	SETGLOB 22
-	SETGLOB 21
 	SETGLOB 20
 	SETGLOB 19
 	SETGLOB 18
@@ -2497,8 +2458,6 @@ IFREFELSE {
 }
 
 .macro c7_to_c4
-GETGLOB 22
-GETGLOB 21
 GETGLOB 20
 GETGLOB 19
 GETGLOB 18
@@ -2520,19 +2479,17 @@ STDICT
 STREF
 STU 128
 STREF
-ROLLREV 9
+ROLLREV 7
 NEWC
 STREF
 STU 128
 STU 128
 STU 128
 STSLICE
-ROLLREV 4
+ROTREV
 NEWC
 STU 256
 STU 128
-STU 8
-STSLICE
 STBREFR
 STBREFR
 ENDC
@@ -2687,6 +2644,12 @@ IFJMPREF {
 	LEQ
 	IFJMPREF {
 		DUP
+		PUSHINT 59145053
+		EQUAL
+		IFJMPREF {
+			CALL $mintNft$
+		}
+		DUP
 		PUSHINT 64331365
 		EQUAL
 		IFJMPREF {
@@ -2697,12 +2660,6 @@ IFJMPREF {
 		EQUAL
 		IFJMPREF {
 			CALL $transferOwnership$
-		}
-		DUP
-		PUSHINT 239788830
-		EQUAL
-		IFJMPREF {
-			CALL $setDefaultRoyaltyFee$
 		}
 		DUP
 		PUSHINT 263162756
@@ -2741,7 +2698,7 @@ IFJMPREF {
 		}
 	}
 	DUP
-	PUSHINT 1383720816
+	PUSHINT 1121049836
 	LEQ
 	IFJMPREF {
 		DUP
@@ -2763,10 +2720,10 @@ IFJMPREF {
 			CALL $_randomNonce$
 		}
 		DUP
-		PUSHINT 1383720816
+		PUSHINT 1121049836
 		EQUAL
 		IFJMPREF {
-			CALL $nftAddress$
+			CALL $constructor$
 		}
 	}
 	DUP
@@ -2774,10 +2731,10 @@ IFJMPREF {
 	LEQ
 	IFJMPREF {
 		DUP
-		PUSHINT 1451737287
+		PUSHINT 1383720816
 		EQUAL
 		IFJMPREF {
-			CALL $constructor$
+			CALL $nftAddress$
 		}
 		DUP
 		PUSHINT 1452188484
@@ -2800,7 +2757,7 @@ IFJMPREF {
 	}
 }
 DUP
-PUSHINT 2043273500
+PUSHINT 1912079397
 LEQ
 IFJMPREF {
 	DUP
@@ -2820,12 +2777,6 @@ IFJMPREF {
 	EQUAL
 	IFJMPREF {
 		CALL $resolveIndexCodeHash$
-	}
-	DUP
-	PUSHINT 2043273500
-	EQUAL
-	IFJMPREF {
-		CALL $mintNft$
 	}
 }
 

@@ -1,15 +1,14 @@
 import BigNumber from "bignumber.js";
 import { Account, Tx, Contract, locklift, getRandomNonce, TIP4, Address } from "./locklift";
 
-export async function deploy(account: Account, defaultTokenRoot: Contract, config = { defaultRoyaltyFee: 0, remainOnNft: 0 }): Promise<Contract> {
+export async function deploy(account: Account, config = { remainOnNft: 0 }): Promise<Contract> {
     const CollectionTradeable = await locklift.factory.getContract("CollectionTradeable");
     const NftTradeable = await locklift.factory.getContract("NftTradeable");
     const Index = await locklift.factory.getContract("Index", 'contracts/modules/TIP4_3/compiled');
     const IndexBasis = await locklift.factory.getContract("IndexBasis", 'contracts/modules/TIP4_3/compiled');
 
-    let { defaultRoyaltyFee, remainOnNft } = config;
+    let { remainOnNft } = config;
     remainOnNft = remainOnNft || 0;
-    defaultRoyaltyFee = defaultRoyaltyFee || 0;
 
     return await locklift.giver.deployContract({
         contract: CollectionTradeable,
@@ -19,8 +18,6 @@ export async function deploy(account: Account, defaultTokenRoot: Contract, confi
             codeIndexBasis: IndexBasis.code,
             owner: account.address,
             remainOnNft: locklift.utils.convertCrystal(remainOnNft, 'nano'),
-            defaultRoyaltyFee,
-            defaultTokenRoot: defaultTokenRoot.address
         },
         initParams: {
             _randomNonce: getRandomNonce()
@@ -42,12 +39,24 @@ export async function openSale(account: Account, collection: Contract, config = 
     })
 }
 
-export async function mintNft(account: Account, collection: Contract, nfts: TIP4.NftMetadata[], feePerNft = 3.3): Promise<Tx> {
+
+export async function closeSale(account: Account, collection: Contract): Promise<Tx> {
+    let totalSupply = await getTotalSupply(collection)
+    return await account.runTarget({
+        contract: collection,
+        method: 'closeSale',
+        params: {},
+        keyPair: account.keyPair,
+        value: locklift.utils.convertCrystal(totalSupply.toNumber() * 0.3, 'nano')
+    })
+}
+
+export async function mintNft(account: Account, collection: Contract, nfts: TIP4.NftMetadata[], royaltyFee: number, tokenRoot: Address, feePerNft = 3.3): Promise<Tx> {
     let jsons = nfts.map(m => JSON.stringify(m));
     let tx = await account.runTarget({
         contract: collection,
         method: 'mintNft',
-        params: { owner: collection.address, jsons: jsons },
+        params: { owner: collection.address, jsons: jsons, royaltyFee, tokenRoot },
         keyPair: account.keyPair,
         value: locklift.utils.convertCrystal(jsons.length * feePerNft, 'nano')
     });
@@ -57,21 +66,21 @@ export async function mintNft(account: Account, collection: Contract, nfts: TIP4
 
 export function getTotalSupply(collection: Contract): Promise<BigNumber> {
     return collection.call({
-      method: 'totalSupply',
-      params: {
-        answerId: 0
-      }
+        method: 'totalSupply',
+        params: {
+            answerId: 0
+        }
     });
-  }
+}
 
-  export async function getNftById(collection: Contract, id: number): Promise<Contract> {
+export async function getNftById(collection: Contract, id: number): Promise<Contract> {
     let nft = await locklift.factory.getContract("NftTradeable");
     let nftAddr = await collection.call({
-      method: 'nftAddress',
-      params: { id, answerId: 0 }
+        method: 'nftAddress',
+        params: { id, answerId: 0 }
     });
-  
+
     nft.setAddress(nftAddr);
-  
+
     return nft;
-  }
+}

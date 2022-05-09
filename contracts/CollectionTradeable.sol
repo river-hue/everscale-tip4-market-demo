@@ -18,18 +18,12 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal, RandomNonce {
 	/// process is completed on the Nft contract
 	uint128 _remainOnNft;
 
-	/// The default royalty fee for all Nfts
-	uint8 _defaultRoyaltyFee;
-	address _defaultTokenRoot;
-
 	constructor(
 		TvmCell codeNft,
 		TvmCell codeIndex,
 		TvmCell codeIndexBasis,
 		address owner,
-		uint128 remainOnNft,
-		uint8 defaultRoyaltyFee,
-		address defaultTokenRoot
+		uint128 remainOnNft
 	)
 		public
 		OwnableInternal(owner)
@@ -38,27 +32,27 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal, RandomNonce {
 	{
 		tvm.accept();
 		_remainOnNft = remainOnNft;
-		_defaultRoyaltyFee = defaultRoyaltyFee;
-		_defaultTokenRoot = defaultTokenRoot;
 	}
 
 	/** Opens Sale */
+	/** TODO: Check Loop Limit */
     /** Collection Can Only Call This if Owned By Author */
     function openSale(uint256 salePrice) external onlyOwner {
         for (uint256 i = 0; i < _totalSupply; i++) {
-			NftTradeable(_resolveNft(i)).openSale{flag: 64}(salePrice);
+			NftTradeable(_resolveNft(i)).openSale{flag: 0, value: 0.3 ton}(salePrice);
 		}
     }
 
     /** Closes Sale */
+	/** TODO: Check Loop Limit */
     /** Collection Can only Call this if Owned By Author */
     function closeSale() external onlyOwner {
         for (uint256 i = 0; i < _totalSupply; i++) {
-			NftTradeable(_resolveNft(i)).closeSale{flag: 64}();
+			NftTradeable(_resolveNft(i)).closeSale{flag: 0, value: 0.3 ton}();
 		}
     }
 	
-	function mintNft(string[] jsons) public virtual onlyOwner returns (uint startId, uint endId) {
+	function mintNft(string[] jsons, uint8 royaltyFee, address tokenRoot) public virtual onlyOwner returns (uint startId, uint endId) {
         require(
 			msg.value > _remainOnNft + (3 ton * jsons.length),
 			value_is_less_than_required
@@ -69,7 +63,7 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal, RandomNonce {
 		endId = startId + jsons.length;
 
         for ((string json) : jsons) {
-            _mintNft(owner(), json, _defaultRoyaltyFee, _defaultTokenRoot, 3 ton, 0);
+            _mintNft(owner(), json, royaltyFee, tokenRoot, 3 ton, 0);
         }
 
 		return (startId, endId);
@@ -101,9 +95,6 @@ contract CollectionTradeable is TIP4_3Collection, OwnableInternal, RandomNonce {
 		_remainOnNft = remainOnNft;
 	}
 
-	function setDefaultRoyaltyFee(uint8 royaltyFee) external virtual onlyOwner {
-		_defaultRoyaltyFee = royaltyFee;
-	}
 
 	function _buildNftState(TvmCell code, uint256 id)
 		internal
