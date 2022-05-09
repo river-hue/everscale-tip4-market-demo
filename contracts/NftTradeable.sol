@@ -161,6 +161,7 @@ contract NftTradeable is IAcceptTokensTransferCallback, TIP4_1Nft, TIP4_2Nft, TI
         _royaltyFee = royaltyFee;
     }
 
+    /** TODO: Cannot set public, since seller could change it before Buyer Completes Purchase */
     function _setTokenRoot(address newTokenRoot) internal {
         _tokenRoot = newTokenRoot;
        TokenRoot(_tokenRoot).deployWallet{

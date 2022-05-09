@@ -701,9 +701,9 @@ SETGLOB 19
 CALL $_setTokenRoot_internal_macro$
 
 .macro _setTokenRoot_internal_macro
-.loc ../contracts/NftTradeable.sol, 165
-SETGLOB 20
 .loc ../contracts/NftTradeable.sol, 166
+SETGLOB 20
+.loc ../contracts/NftTradeable.sol, 167
 PUSHINT 100000000
 MYADDR
 GETGLOB 20
@@ -737,7 +737,7 @@ ISNULL
 IFREF {
 	CALL $c4_to_c7$
 }
-.loc ../contracts/NftTradeable.sol, 174
+.loc ../contracts/NftTradeable.sol, 175
 OVER
 PUSHCONT {
 	LDREF
@@ -762,14 +762,14 @@ THROW 0
 CALL $_setTokenWallet_internal_macro$
 
 .macro _setTokenWallet_internal_macro
-.loc ../contracts/NftTradeable.sol, 175
+.loc ../contracts/NftTradeable.sol, 176
 GETGLOB 9
 GETGLOB 20
 SDEQ
 THROWIFNOT 1020
-.loc ../contracts/NftTradeable.sol, 176
-ACCEPT
 .loc ../contracts/NftTradeable.sol, 177
+ACCEPT
+.loc ../contracts/NftTradeable.sol, 178
 SETGLOB 21
 .loc ../contracts/NftTradeable.sol, 0
 
@@ -778,7 +778,7 @@ SETGLOB 21
 CALL $_beforeTransfer_internal_macro$
 
 .macro _beforeTransfer_internal_macro
-.loc ../contracts/NftTradeable.sol, 185
+.loc ../contracts/NftTradeable.sol, 186
 DROP
 CALLREF {
 	CALL $_destructIndex_internal_macro$
@@ -791,7 +791,7 @@ DROP
 CALL $_afterTransfer_internal_macro$
 
 .macro _afterTransfer_internal_macro
-.loc ../contracts/NftTradeable.sol, 193
+.loc ../contracts/NftTradeable.sol, 194
 BLKDROP 3
 CALLREF {
 	CALL $_deployIndex_internal_macro$
@@ -803,7 +803,7 @@ CALLREF {
 CALL $_beforeChangeOwner_internal_macro$
 
 .macro _beforeChangeOwner_internal_macro
-.loc ../contracts/NftTradeable.sol, 202
+.loc ../contracts/NftTradeable.sol, 203
 DROP
 CALLREF {
 	CALL $_destructIndex_internal_macro$
@@ -816,7 +816,7 @@ DROP2
 CALL $_afterChangeOwner_internal_macro$
 
 .macro _afterChangeOwner_internal_macro
-.loc ../contracts/NftTradeable.sol, 211
+.loc ../contracts/NftTradeable.sol, 212
 BLKDROP 4
 CALLREF {
 	CALL $_deployIndex_internal_macro$

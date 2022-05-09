@@ -1,4 +1,5 @@
-import { Account, Contract, locklift } from "./locklift";
+import BigNumber from "bignumber.js";
+import { Account, Address, Contract, locklift } from "./locklift";
 
 export async function deploy(account: Account, tokenRoot: Contract): Promise<Contract> {
 
@@ -26,4 +27,28 @@ export async function deploy(account: Account, tokenRoot: Contract): Promise<Con
   TokenWallet.setAddress(walletAddr);
 
   return TokenWallet;
+}
+
+export function transfer(account: Account, wallet: Contract, amount: number, recipient: Address): Promise<Tx> {
+  return account.runTarget({
+    contract: wallet,
+    method: 'transfer',
+    params: {
+      amount,
+      recipient,
+      remainingGasTo: account.address,
+      notify: true,
+      deployWalletValue: 0,
+      payload: {}
+    },
+    keyPair: account.keyPair,
+    value: locklift.utils.convertCrystal(2, 'nano')
+  })
+}
+
+export function getBalance(wallet: Contract): Promise<BigNumber> {
+  return wallet.call({
+    method: 'balance',
+    params: { answerId: 0 }
+  })
 }

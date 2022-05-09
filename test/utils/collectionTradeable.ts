@@ -51,9 +51,11 @@ export async function closeSale(account: Account, collection: Contract): Promise
     })
 }
 
-export async function mintNft(account: Account, collection: Contract, nfts: TIP4.NftMetadata[], royaltyFee: number, tokenRoot: Address, feePerNft = 3.3): Promise<Tx> {
+export async function mintNft(account: Account, collection: Contract, nfts: TIP4.NftMetadata[], royaltyFee: number, tokenRoot: Address, feePerNft = 3.3): Promise<Contract[]> {
     let jsons = nfts.map(m => JSON.stringify(m));
-    let tx = await account.runTarget({
+    let start = (await getTotalSupply(collection)).toNumber()
+    
+    await account.runTarget({
         contract: collection,
         method: 'mintNft',
         params: { owner: collection.address, jsons: jsons, royaltyFee, tokenRoot },
@@ -61,7 +63,8 @@ export async function mintNft(account: Account, collection: Contract, nfts: TIP4
         value: locklift.utils.convertCrystal(jsons.length * feePerNft, 'nano')
     });
 
-    return tx;
+    // Get Minted Nfts
+    return Promise.all(Array(nfts.length).fill(0).map((_, i) => getNftById(collection, i+start)))
 }
 
 export function getTotalSupply(collection: Contract): Promise<BigNumber> {
