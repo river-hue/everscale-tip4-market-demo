@@ -196,11 +196,11 @@
 			]
 		},
 		{
-			"name": "_isOpen",
+			"name": "_isOnSale",
 			"inputs": [
 			],
 			"outputs": [
-				{"name":"_isOpen","type":"bool"}
+				{"name":"_isOnSale","type":"bool"}
 			]
 		},
 		{
@@ -274,7 +274,7 @@
 		{"name":"_tokenRoot","type":"address"},
 		{"name":"_tokenWallet","type":"address"},
 		{"name":"_salePrice","type":"uint256"},
-		{"name":"_isOpen","type":"bool"},
+		{"name":"_isOnSale","type":"bool"},
 		{"name":"_author","type":"address"}
 	]
 }

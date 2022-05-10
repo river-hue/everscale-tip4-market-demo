@@ -56,7 +56,7 @@ describe('Test CollectionTradeable contract', async function () {
             await Collection.openSale(collectionOwner, collection, { salePrice: TEST_NFT_PRICE })
             for (let i = 0; i < 4; i++) {
                 let nft = await Collection.getNftById(collection, start.toNumber() + i)
-                let isOpen = await Nft.getIsOpen(nft)
+                let isOpen = await Nft.getIsOnSale(nft)
                 expect(isOpen).to.be.true
             }
 
@@ -73,7 +73,7 @@ describe('Test CollectionTradeable contract', async function () {
             await Collection.openSale(attacker, collection, { salePrice: TEST_NFT_PRICE })
             for (let i = 0; i < 4; i++) {
                 let nft = await Collection.getNftById(collection, start.toNumber() + i)
-                let isOpen = await Nft.getIsOpen(nft)
+                let isOpen = await Nft.getIsOnSale(nft)
                 expect(isOpen).to.be.false
             }
 
@@ -92,7 +92,7 @@ describe('Test CollectionTradeable contract', async function () {
             await Collection.closeSale(collectionOwner, collection)
             for (let i = 0; i < 4; i++) {
                 let nft = await Collection.getNftById(collection, start.toNumber() + i)
-                let isOpen = await Nft.getIsOpen(nft)
+                let isOpen = await Nft.getIsOnSale(nft)
                 expect(isOpen).to.be.false
             }
 
@@ -109,7 +109,7 @@ describe('Test CollectionTradeable contract', async function () {
             await Collection.closeSale(attacker, collection)
             for (let i = 0; i < 4; i++) {
                 let nft = await Collection.getNftById(collection, start.toNumber() + i)
-                let isOpen = await Nft.getIsOpen(nft)
+                let isOpen = await Nft.getIsOnSale(nft)
                 expect(isOpen).to.be.true
             }
 

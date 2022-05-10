@@ -3,7 +3,7 @@
 const { expect } = require("chai");
 const { locklift, CollectionTradeable: Collection, NftTradeable: Nft, TokenRoot, TokenWallet, Contract, Account, deployAccount, logContract, getRandomNonce, TIP4, } = require("./utils");
 
-describe('Test NftTradeable contract', async function () {
+describe.only('Test NftTradeable contract', async function () {
     /** @type {Contract} */
     let collection;
     /** @type {Contract} */
@@ -43,17 +43,36 @@ describe('Test NftTradeable contract', async function () {
         })
     })
     describe('openSale()', function () {
-        it('Should open sale if owner')
+        it('Should open sale if owner', async function() {
+            let [nft,] = await Collection.mintNft(collectionOwner, collection, [TIP4.DEFAULT], 0, tokenRoot.address)
+            await Nft.openSale(collectionOwner, nft, {salePrice: 1000})
+            throw 'unimplemented'
+            
+        })
         it('Should open sale if collection')
         it('Should transfer ownership to buyer iff correct amount and send tokens to seller')
         it('Should not transfer ownership to buyer if incorrect amount and send tokens back to buyer')
         it('Should not transfer ownership to buyer if incorrect token and send tokens back to buyer')
+
+        describe('royalties basic test', function () {
+            const tests = [
+                {fee: 50, purchase: 1000, royalty: 500},
+                {fee: 50, purchase: 3, royalty: 1 },
+                {fee: 33, purchase: 4000, royalty: 1320}
+            ]
+            tests.forEach(sample => {
+                it(`Should send royalties if: Fee=${sample.fee}%, Purchase=${sample.purchase} tokens, Royalty=${sample.royalty} tokens`)
+            })
+        })
+        describe('royalties fuzz test', function() {})
     })
     describe('closeSale()', function () {
         it('Should close sale if owner')
         it('Should close sale if sale complete')
         it('Should not transfer ownership to buyer if closed and send tokens back to buyer')
     })
+
+
 
 
 })
